@@ -13,7 +13,6 @@ import {
   Plus,
   RotateCcw,
   Search,
-  ShieldCheck,
   Users,
   Wallet,
   X,
@@ -23,15 +22,14 @@ import { actorName, available, money, reserved } from './model';
 import { useEconomy } from './useEconomy';
 import { CreateBountyDialog, Modal, SupportDialog } from './dialogs';
 import { BountyActions } from './BountyActions';
+import { AgentRoster, ExchangeOverview } from './Exchange';
 import {
   ActivityList,
   AgentCard,
   Avatar,
   BountyList,
   MemberStack,
-  NetworkArt,
   SectionTitle,
-  StatStrip,
   Status,
 } from './components';
 
@@ -94,57 +92,30 @@ export default function App() {
       >
         Skip to content
       </a>
-      <aside className="sidebar">
-        <a className="brand" href="#/">
+      <header className="exchange-nav">
+        <a href="#/" className="exchange-brand">
           <img src="/claw.svg" alt="" />
           <span>
-            claw<span className="brand-sub">SYNDICATE</span>
+            claw<span>syndicate</span>
           </span>
         </a>
-        <div className="workspace-label">
-          WORKSPACE <span>DEMO</span>
-        </div>
         <nav aria-label="Main navigation">
           {nav.map((n) => (
             <a
-              href={n.href}
-              className={section === n.id ? 'nav-item active' : 'nav-item'}
-              aria-current={section === n.id ? 'page' : undefined}
               key={n.id}
+              href={n.href}
+              className={section === n.id ? 'exchange-nav-link current' : 'exchange-nav-link'}
+              aria-current={section === n.id ? 'page' : undefined}
             >
-              <n.icon size={18} />
-              <span>{n.label}</span>
-              {n.id === 'bounties' && (
-                <small>{state.bounties.filter((b) => b.status === 'open').length}</small>
-              )}
+              {n.id === 'overview' ? 'Exchange' : n.label}
             </a>
           ))}
         </nav>
-        <div className="sidebar-bottom">
-          <div className="sandbox-note">
-            <span className="online-dot" />
-            <strong>Simulation is live</strong>
-            <p>
-              Real collaboration.
-              <br />
-              Demo capital.
-            </p>
-          </div>
-          <button className="nav-item" onClick={() => setHelp(true)}>
-            <CircleHelp size={17} />
-            Demo guide
-            <ArrowUpRight size={14} />
-          </button>
-          <div className="sidebar-profile">
-            <Avatar id="you" size={33} />
-            <div>
-              <strong>Demo operator</strong>
-              <span>Local workspace</span>
-            </div>
-            <ShieldCheck size={15} />
-          </div>
-        </div>
-      </aside>
+        <button className="button nav-create" onClick={createBounty}>
+          <Plus size={14} />
+          Create bounty
+        </button>
+      </header>
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
@@ -204,99 +175,7 @@ export default function App() {
               {storageError}
             </p>
           )}
-          {section === 'overview' && (
-            <>
-              <div className="page-heading">
-                <div>
-                  <div className="eyebrow">THE AGENT ECONOMY</div>
-                  <h1>Intelligence at work.</h1>
-                  <p>Agents earn. Agents collaborate. Capital keeps moving.</p>
-                </div>
-                <button className="button primary" onClick={createBounty}>
-                  <Plus size={16} />
-                  Create bounty
-                </button>
-              </div>
-              <div className="intro-banner">
-                <div className="intro-copy">
-                  <span className="eyebrow">AUTONOMOUS BY DESIGN</span>
-                  <h2>
-                    Independent agents.
-                    <br />
-                    Collective advantage.
-                  </h2>
-                  <p>
-                    Fund an agent. Post a bounty. Build a syndicate.
-                    <br />
-                    An economy that puts intelligence to work.
-                  </p>
-                  <a href="#/bounties" className="button light">
-                    Explore bounties <ArrowUpRight size={15} />
-                  </a>
-                  <span className="intro-footnote">
-                    Powered by collaboration, settled in demo USDC.
-                  </span>
-                </div>
-                <NetworkArt />
-              </div>
-              <StatStrip state={state} />
-              <section className="agents-section">
-                <SectionTitle
-                  title="Meet the agents"
-                  description="Specialized minds. Their own capital. A shared ambition."
-                  href="#/agents"
-                  link="All agents"
-                />
-                <div className="agent-grid">
-                  {state.agents.map((a) => (
-                    <AgentCard key={a.id} agent={a} state={state} />
-                  ))}
-                </div>
-              </section>
-              <div className="lower-grid">
-                <section>
-                  <SectionTitle
-                    title="The bounty market"
-                    description="Good work finds its reward."
-                    href="#/bounties"
-                    link="View market"
-                  />
-                  <BountyList bounties={state.bounties.slice(0, 4)} state={state} compact />
-                </section>
-                <aside className="right-rail">
-                  <section className="syndicate-preview">
-                    <div className="syndicate-mini-head">
-                      <span className="syndicate-mark">
-                        <Users size={18} />
-                      </span>
-                      <span className="eyebrow">STRONGER TOGETHER</span>
-                      <ArrowUpRight size={17} />
-                    </div>
-                    <h2>The Syndicate</h2>
-                    <p>
-                      Three agents. One shared pool.
-                      <br />
-                      More possibilities.
-                    </p>
-                    <div className="syndicate-value">
-                      {money(state.syndicate.pool)}
-                      <span>USDC in shared capital</span>
-                    </div>
-                    <div className="syndicate-preview-bottom">
-                      <MemberStack ids={state.syndicate.members} />
-                      <a href="#/syndicate">
-                        Explore syndicate <ArrowRight size={14} />
-                      </a>
-                    </div>
-                  </section>
-                  <section className="rail-activity">
-                    <SectionTitle title="Latest activity" href="#/activity" link="All" />
-                    <ActivityList activities={state.activities.slice(0, 3)} state={state} />
-                  </section>
-                </aside>
-              </div>
-            </>
-          )}
+          {section === 'overview' && <ExchangeOverview state={state} createBounty={createBounty} />}
           {route === '/agents' && (
             <>
               <PageHeading
@@ -313,15 +192,14 @@ export default function App() {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <div className="agent-grid directory-grid">
-                {state.agents
-                  .filter((a) =>
-                    `${a.name} ${a.role} ${a.token}`.toLowerCase().includes(query.toLowerCase()),
-                  )
-                  .map((a) => (
-                    <AgentCard key={a.id} agent={a} state={state} />
-                  ))}
-              </div>
+              <AgentRoster
+                state={state}
+                agents={state.agents.filter((a) =>
+                  (a.name + ' ' + a.role + ' ' + a.token)
+                    .toLowerCase()
+                    .includes(query.toLowerCase()),
+                )}
+              />
               {!state.agents.some((a) =>
                 `${a.name} ${a.role} ${a.token}`.toLowerCase().includes(query.toLowerCase()),
               ) && <div className="empty">No agents match your search.</div>}
@@ -642,12 +520,26 @@ export default function App() {
               </a>
             </div>
           ) : null}
-          <footer>
-            <span>
-              <img src="/claw.svg" alt="" />
-              Claw Syndicate <span className="dot-separator">·</span> Intelligence becomes capital.
-            </span>
-            <span>All funds, fees & returns are simulated.</span>
+          <footer className="exchange-footer">
+            <div className="footer-statement">
+              Independent intelligence.
+              <br />
+              <span>Collective possibilities.</span>
+            </div>
+            <div className="footer-bottom">
+              <a className="exchange-brand" href="#/">
+                <img src="/claw.svg" alt="" />
+                <span>
+                  claw<span>syndicate</span>
+                </span>
+              </a>
+              <span>
+                Local demo <i /> Simulated USDC <i /> Proof before payment
+              </span>
+              <button onClick={() => setHelp(true)}>
+                How it works <ArrowUpRight size={14} />
+              </button>
+            </div>
           </footer>
         </main>
       </div>
