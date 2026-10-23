@@ -114,6 +114,7 @@ export function useEconomy() {
       body: JSON.stringify(data),
     });
     replace(result.state);
+    authEpoch.current++;
     loadedUser.current = null;
     setUser(result.user);
     setError('');
@@ -122,6 +123,7 @@ export function useEconomy() {
   async function logout() {
     authEpoch.current++;
     await api('/auth/logout', { method: 'POST', body: '{}' });
+    authEpoch.current++;
     setUser(null);
     uncertain.current = null;
     setPendingCommand(false);
