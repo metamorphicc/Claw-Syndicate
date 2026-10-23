@@ -1,40 +1,59 @@
-/* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4
- * genre: atmospheric · macrostructure: Ecosystem Index · theme: Midnight
- * nav: N3 Side-rail (product adaptation) · footer: Ft2 Inline
- * audience: agent economy demo viewers · use: bounty lifecycle · tone: precise, dark
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V5
+ * genre: modern-minimal · macrostructure: Narrative Workflow (interactive work board)
+ * theme: supplied Raycast style reference · nav: N5 Floating bar · footer: Ft5 Statement
+ * audience: agent economy participants · use: bounty lifecycle · tone: quiet, tactile
+ * Source: user-supplied DESIGN (3).md; product structure is original to Claw Syndicate.
  */
 :root {
   color-scheme: dark;
-  --color-paper: #101011;
-  --color-sidebar: #131314;
-  --color-surface: #19191b;
-  --color-raised: #202023;
-  --color-hover: #262629;
-  --color-ink: #efeee9;
-  --color-muted: #949499;
-  --color-faint: #898990;
-  --color-line: #2b2b2e;
-  --color-accent: #f58b5b;
-  --color-accent-ink: #1c130e;
-  --color-accent-soft: #34241d;
-  --color-green: #a2c99b;
-  --color-green-soft: #222d24;
-  --color-blue: #9ab3d3;
-  --color-blue-soft: #232936;
-  --color-lilac: #b7a5d1;
-  --color-lilac-soft: #2b2535;
-  --color-yellow: #d7bd83;
-  --color-yellow-soft: #332e23;
-  --color-danger: #f39a98;
-  --color-overlay: #000000b8;
+  --color-paper: #040506;
+  --color-sidebar: #07080a;
+  --color-surface: #07080a;
+  --color-raised: #111214;
+  --color-hover: #1b1c1e;
+  --color-ink: #ffffff;
+  --color-muted: #9c9c9d;
+  --color-faint: #85868b;
+  --color-line: #24262a;
+  --color-line-strong: #363739;
+  --color-accent: #e6e6e6;
+  --color-accent-ink: #303133;
+  --color-accent-soft: #1b1c1e;
+  --color-brand: #ff6363;
+  --color-brand-soft: #452324;
+  --color-green: #c6c7c9;
+  --color-green-soft: #17191c;
+  --color-blue: #c6c7c9;
+  --color-blue-soft: #17191c;
+  --color-lilac: #c6c7c9;
+  --color-lilac-soft: #17191c;
+  --color-yellow: #e1d7d7;
+  --color-yellow-soft: #25191b;
+  --color-danger: #ff8e8e;
+  --color-overlay: #040506df;
   --color-shadow: #00000040;
+  --color-highlight: #ffffff0d;
+  --color-clear-surface: #07080acc;
+  --color-art-blue: #143ca3;
+  --color-art-sky: #63a1ff;
+  --color-art-deep: #02193b;
+  --shadow-key: inset 0 1px 0 #ffffff0d, inset 0 -1px 0 #00000033, 0 0 0 1px #ffffff0a;
+  --shadow-key-hover: inset 0 1px 0 #ffffff19, inset 0 -1px 0 #00000033, 0 0 0 1px #ffffff19;
   --color-transparent: transparent;
-  --font-display: 'Manrope Variable', 'Segoe UI', sans-serif;
-  --font-body: 'Manrope Variable', 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', Consolas, monospace;
-  --space-unit: 4px;
-  --radius-card: 12px;
-  --radius-button: 7px;
+  --font-display: 'Inter Variable', 'Segoe UI', sans-serif;
+  --font-body: 'Inter Variable', 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', Consolas, monospace;
+  --space-unit: 8px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-10: 80px;
+  --radius-card: 16px;
+  --radius-button: 8px;
   --dur-fast: 150ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }

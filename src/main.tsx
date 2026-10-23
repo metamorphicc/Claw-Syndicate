@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import '@fontsource-variable/manrope';
-import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/geist-mono';
 import './styles.css';
 import App from './App';
 ReactDOM.createRoot(document.getElementById('root')!).render(
