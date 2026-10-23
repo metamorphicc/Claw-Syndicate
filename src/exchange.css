@@ -1,5 +1,5 @@
 /* Hallmark · macrostructure: Narrative Workflow · supplied Raycast design reference
- * nav: N5 Floating bar · footer: Ft5 Statement · enrichment: original SVG claw geometry
+ * nav: N5 Floating bar · footer: Ft5 Statement · enrichment: animated Blender sculpture
  * Pre-emit critique: P5 H5 E4 S5 R5 V5
  */
 body {
@@ -26,6 +26,41 @@ h3 {
 }
 .app-shell {
   padding: 24px 32px 0;
+  position: relative;
+  isolation: isolate;
+}
+.app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 640px 500px at calc(50% + 420px) 320px,
+      var(--color-atmosphere-coral),
+      var(--color-transparent) 75%
+    ),
+    radial-gradient(
+      ellipse 880px 720px at calc(50% - 500px) 960px,
+      var(--color-atmosphere-cool),
+      var(--color-transparent) 80%
+    ),
+    radial-gradient(
+      ellipse 800px 600px at 70% 95%,
+      var(--color-atmosphere-soft),
+      var(--color-transparent) 75%
+    );
+}
+.app-shell::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--texture-grain);
+  background-repeat: repeat;
+  opacity: 0.055;
 }
 .main-shell {
   margin-left: 0;
@@ -2066,6 +2101,32 @@ h3 {
   position: relative;
   width: 100%;
   aspect-ratio: 1.22;
+  isolation: isolate;
+}
+.claw-model-stage::before {
+  content: '';
+  position: absolute;
+  inset: 4% -4% 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 52% 48%,
+    var(--color-atmosphere-coral),
+    var(--color-transparent) 68%
+  );
+  filter: blur(20px);
+}
+.claw-model-stage::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 8%;
+  height: 12%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse, var(--color-atmosphere-floor), var(--color-transparent) 68%);
+  filter: blur(10px);
 }
 .claw-model-poster,
 .claw-model-canvas {
@@ -2136,6 +2197,14 @@ h3 {
     font-size: 6px;
     padding: 8px 24px 0;
   }
+}
+.work-card,
+.agent-roster,
+.detail-panel,
+.position-panel,
+.collective-band,
+.syndicate-hero {
+  background-image: linear-gradient(135deg, var(--color-panel-sheen), var(--color-transparent) 50%);
 }
 .roster-agent > div > .roster-mobile-meta {
   display: none;

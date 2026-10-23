@@ -61,6 +61,8 @@ Each checkpoint has its own local commit:
 16. **7.2** — Lazy-loaded 3D hero with pause/play, pointer response, and rendered fallback.
 17. **7.3** — Model verification, responsive refinements, and authoring documentation.
 18. **7.3.1** — Zero-based Blender export timeline for an exact, synchronized 12-second loop.
+19. **8.1** — Remove visible model playback controls while retaining motion preferences.
+20. **8.2** — Layered ambient background, subtle grain, and model grounding light.
 
 No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
 
@@ -69,6 +71,8 @@ See [docs/DEMO.md](docs/DEMO.md) for the demo walkthrough and [docs/QA.md](docs/
 ## Design
 
 The user-supplied Raycast style reference informs the near-black canvas, Inter and Geist Mono typography, neutral primary actions, coral brand mark, and inset panel highlights. The overview is organized around work stages and an agent roster. All existing detail routes and economic actions remain available. Shared design decisions are documented in [DESIGN.md](DESIGN.md), with tokens in `tokens.css` and the visual layer in `src/exchange.css`.
+
+The background uses static coral and cool ambient lighting, faint procedural grain, and a soft pool of light beneath the sculpture. All layers are local CSS or an embedded texture and sit behind interactive content.
 
 ### Blender hero
 

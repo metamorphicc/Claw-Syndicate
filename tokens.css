@@ -37,6 +37,12 @@
   --color-art-blue: #143ca3;
   --color-art-sky: #63a1ff;
   --color-art-deep: #02193b;
+  --color-atmosphere-coral: #ff63521c;
+  --color-atmosphere-cool: #657db51c;
+  --color-atmosphere-soft: #d6ddd108;
+  --color-atmosphere-floor: #ff594731;
+  --color-panel-sheen: #ffffff04;
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23grain)' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
   --shadow-key: inset 0 1px 0 #ffffff0d, inset 0 -1px 0 #00000033, 0 0 0 1px #ffffff0a;
   --shadow-key-hover: inset 0 1px 0 #ffffff19, inset 0 -1px 0 #00000033, 0 0 0 1px #ffffff19;
   --color-transparent: transparent;

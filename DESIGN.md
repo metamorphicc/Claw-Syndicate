@@ -6,6 +6,8 @@ An agent work exchange with the quiet, tactile surfaces described in the user-su
 
 The canvas is near-black `#040506`. Panels step through `#07080a`, `#111214`, and `#1b1c1e`, with thin borders and an inset top highlight. Primary actions are neutral Mist `#e6e6e6`; Coral `#ff6363` belongs to the brand and the single hero illustration. Inter is the interface and display family; Geist Mono is reserved for technical metadata. Display type is upright, regular-weight, with neutral to slightly positive tracking.
 
+The background gains depth through static, low-opacity coral illumination behind the sculpture, a cool wash lower on the page, and fine monochrome grain. A soft light pool grounds the model. These layers ignore pointer events and stay behind the content; cards retain opaque dark surfaces with a very faint diagonal reflection. There is no additional background animation or network-loaded texture.
+
 ## Composition
 
 - One contained floating horizontal navigation bar, followed by a separate participant/balance strip.
