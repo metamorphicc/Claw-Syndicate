@@ -1,17 +1,17 @@
 # Claw Syndicate
 
-Кликабельное демо экономики AI-агентов: собственные пулы, рынок баунти, поддержка и общий капитал синдиката. React 19 + TypeScript + Vite, без сервера и блокчейна. Интерфейс на английском.
+A clickable simulation of an AI agent economy: independent pools, a bounty marketplace, agent support, and shared syndicate capital. Built with React 19, TypeScript, and Vite. No backend or blockchain connection is required.
 
-## Запуск
+## Getting started
 
-Нужен Node.js 20.19+ или 22.12+.
+Requires Node.js 20.19+ or 22.12+.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-По умолчанию приложение доступно на http://127.0.0.1:5173. Если порт занят, Vite укажет другой в терминале.
+The development server defaults to http://127.0.0.1:5173. If that port is busy, Vite prints the selected port in the terminal.
 
 ```sh
 npm test
@@ -19,44 +19,44 @@ npm run build
 npm run preview
 ```
 
-Сборка проверяет TypeScript и создаёт статические файлы в `dist/`. Маршруты используют hash (`#/agents/atlas`), поэтому серверу не нужны правила перенаправления. Шрифты и аватары поставляются локально.
+The build checks TypeScript and generates static files in `dist/`. Hash routes such as `#/agents/atlas` work without server-side rewrite rules. Fonts and avatars are bundled locally.
 
-## Что работает
+## Features
 
-- Четыре агента: Atlas, Vex, Echo и Cipher; роли, аватары, условные токены, пулы и история.
-- Обзор, каталог, карточки агентов, рынок, страницы баунти, синдикат и полная лента событий.
-- Создание задания → взятие другим агентом или человеком → proof с текстом и ссылкой → проверка создателем → выплата.
-- Возврат на доработку и отмена ещё не взятого задания.
-- Поддержка агента и вклад в синдикат с пересчётом баланса, условной доли и бонуса.
-- Поиск, фильтры, переключение действующего участника, доступный баланс, демо-гайд и сброс данных.
-- Сохранение в localStorage, проверка данных при загрузке и синхронизация вкладок. Web Locks сериализует изменения в поддерживающих его браузерах.
+- Four agents: Atlas, Vex, Echo, and Cipher, each with a role, avatar, simulated token, pool, and history.
+- An overview, agent directory and profiles, bounty market and detail pages, syndicate page, and complete activity ledger.
+- Create a bounty → claim it as another agent or human → submit proof with text and a link → review as the creator → pay the executor.
+- Request revisions or cancel an unclaimed bounty.
+- Support an agent or contribute to the syndicate, with balance updates and illustrative share and bonus calculations.
+- Search, status filters, demo identity switching, available balances, a demo guide, and data reset.
+- localStorage persistence, validation on load, and cross-tab synchronization. Web Locks serializes changes in supported browsers.
 
-## Модель и правила
+## Economic model
 
-`src/model.ts` — типы и чистая функция `transition`. Деньги хранятся в целых центах. Создание баунти резервирует награду, но не списывает её с пула. Подтверждение proof списывает сумму с создателя и начисляет исполнителю ровно один раз. Другие задания и вклады учитывают уже зарезервированные средства.
+`src/model.ts` contains the domain types and pure `transition` function. Money is stored as integer cents. Creating a bounty reserves its reward without debiting the pool. Approving proof debits the creator and credits the executor exactly once. New bounties and contributions account for existing reservations.
 
-`src/seed.ts` — четыре агента, пять заданий в разных статусах, один синдикат и начальный баланс пользователя 2 500 USDC. Стартовые пулы уже отражают историческую выплату завершённого задания.
+`src/seed.ts` provides four agents, five bounties at different stages, one syndicate, and a starting user balance of 2,500 USDC. Seed pools already include the historical payment for the completed bounty.
 
-`src/storage.ts` проверяет сохранённые данные; `src/useEconomy.ts` сохраняет изменения. Если запись в браузерное хранилище не удалась, действие не применяется. Повреждённые данные не перезаписываются автоматически. Сброс доступен через **Demo guide → Reset demo**; предыдущий снимок сохраняется в ключе `claw-syndicate:v1:backup`.
+`src/storage.ts` validates saved data, while `src/useEconomy.ts` persists transitions. If a storage write fails, the action is not applied. Corrupt data is never overwritten automatically. **Demo guide → Reset demo** restores seed data and backs up the previous snapshot under `claw-syndicate:v1:backup`.
 
-## Локальные подэтапы
+## Local implementation checkpoints
 
-Каждый подэтап оформлен отдельным коммитом:
+Each checkpoint has its own local commit:
 
-1. **1.1** — каркас React, конфиги и дизайн-токены.
-2. **1.2** — модели, демо-данные, машина состояний и тесты экономики.
-3. **2.1** — дашборд, каталог и страницы агентов/баунти.
-4. **3.1** — хранение, валидация и синхронизация вкладок.
-5. **3.2** — создание, proof, проверка, доработка и выплата в интерфейсе.
-6. **4.1** — поддержка, синдикат и позиции участников.
-7. **5.1** — мобильный интерфейс, шрифты, доступность, проверки хранилища и форматирование.
-8. **5.1.1** — исправление импорта шрифта по результату сборки.
-9. **5.2** — сценарий демонстрации и результаты проверок.
+1. **1.1** — React scaffold, configuration, and design tokens.
+2. **1.2** — Models, seed data, state machine, and economic tests.
+3. **2.1** — Dashboard, directory, agent profiles, and bounty routes.
+4. **3.1** — Persistence, validation, and cross-tab synchronization.
+5. **3.2** — Bounty creation, proof, review, revisions, and payment controls.
+6. **4.1** — Agent support, syndicate contributions, and participant positions.
+7. **5.1** — Mobile layout, typography, accessibility, storage tests, and formatting.
+8. **5.1.1** — Font import correction following the build check.
+9. **5.2** — Demo walkthrough and verification notes.
 
-Remote не подключён. Push и деплой выполняет владелец по отдельному указанию.
+No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
 
-Сценарий показа — в [docs/DEMO.md](docs/DEMO.md), результаты проверок — в [docs/QA.md](docs/QA.md).
+See [docs/DEMO.md](docs/DEMO.md) for the demo walkthrough and [docs/QA.md](docs/QA.md) for verification notes. These supporting documents are currently in Russian.
 
-## Границы демо
+## Demo limitations
 
-Участник выбирается вручную: это симуляция ролей, а не авторизация. Данные принадлежат одному браузеру и не являются общей базой для разных пользователей. Автономные агенты, реальные токены, trading fees и блокчейн-транзакции не подключены. Бонус — иллюстративный расчёт без начисления дохода и вывода средств. Начальные proof-ссылки на example.com — обозначенные в интерфейсе примеры.
+Identity switching simulates roles; it is not authentication. Data belongs to one browser and is not shared across users. Autonomous agent execution, real tokens, trading fees, blockchain transactions, withdrawals, and accrued yield are outside this demo. Support bonuses are illustrative projections. Seed proof links on example.com are labeled placeholders.
