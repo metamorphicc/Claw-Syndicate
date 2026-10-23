@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { ArrowRight, Check, FileCheck2 } from 'lucide-react';
 import type { ActorId, Bounty, Economy } from './model';
-import { actorName, money } from './model';
+import { actorName, money, payout } from './model';
 import type { RunAction } from './dialogs';
 export function BountyActions({
   bounty: b,
@@ -11,6 +11,9 @@ export function BountyActions({
   run,
   switchActor,
   notify,
+  identities,
+  accountId,
+  signIn,
 }: {
   bounty: Bounty;
   actor: ActorId;
@@ -18,6 +21,9 @@ export function BountyActions({
   run: RunAction;
   switchActor: (id: ActorId) => void;
   notify: (text: string) => void;
+  identities: string[];
+  accountId?: string;
+  signIn: () => void;
 }) {
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -34,11 +40,11 @@ export function BountyActions({
       );
       notify(
         type === 'approve'
-          ? `${money(b.reward)} paid to ${actorName(state, b.assignee!)}. Bounty completed.`
+          ? `${money(payout(b))} paid to ${actorName(state, b.assignee!)}. Bounty completed.`
           : type === 'claim'
             ? 'Bounty claimed. You can now submit your proof.'
             : type === 'proof'
-              ? 'Proof submitted. Switch to the creator to review it.'
+              ? 'Proof submitted. The creator can now review it.'
               : type === 'revise'
                 ? 'Changes requested. The executor can submit a revised proof.'
                 : 'Bounty cancelled. Reserved funds released.',
@@ -53,18 +59,25 @@ export function BountyActions({
     e.preventDefault();
     void execute('proof');
   }
-  const switchButton = (id: ActorId, text: string) => (
-    <button
-      className="button full-width"
-      onClick={() => {
-        switchActor(id);
-        setError('');
-      }}
-    >
-      {text}
-      <ArrowRight size={14} />
-    </button>
-  );
+  const switchButton = (id: ActorId, text: string) =>
+    identities.includes(id) ? (
+      <button
+        className="button full-width"
+        onClick={() => {
+          switchActor(id);
+          setError('');
+        }}
+      >
+        {text}
+        <ArrowRight size={14} />
+      </button>
+    ) : null;
+  if (!accountId && !['completed', 'cancelled'].includes(b.status))
+    return (
+      <button className="button primary" onClick={signIn}>
+        Sign in to participate
+      </button>
+    );
   return (
     <div className="bounty-actions">
       {b.status === 'open' &&
@@ -82,7 +95,7 @@ export function BountyActions({
             <p className="form-hint">
               You posted this bounty. Switch identity to take it as an executor.
             </p>
-            {switchButton('you', 'Switch to demo user')}
+            {accountId && switchButton(accountId, 'Switch to your account')}
             <button
               disabled={pending}
               className="button danger full-width"
@@ -132,7 +145,7 @@ export function BountyActions({
         (actor === b.creator ? (
           <>
             <p className="form-hint">
-              Review the proof. Approval transfers {money(b.reward)} from your pool to{' '}
+              Review the proof. Approval transfers {money(payout(b))} from your pool to{' '}
               {actorName(state, b.assignee!)}.
             </p>
             <button
@@ -140,7 +153,7 @@ export function BountyActions({
               disabled={pending}
               onClick={() => execute('approve')}
             >
-              {pending ? 'Settling…' : `Approve & pay ${money(b.reward)}`}
+              {pending ? 'Settling…' : `Approve & pay ${money(payout(b))}`}
               <Check size={16} />
             </button>
             <button
@@ -164,7 +177,7 @@ export function BountyActions({
           <Check size={25} />
           <strong>Work approved. Reward paid.</strong>
           <p>
-            {money(b.reward)} transferred to {actorName(state, b.assignee!)}.
+            {money(payout(b))} transferred to {actorName(state, b.assignee!)}.
           </p>
           <small>{b.completedAt && new Date(b.completedAt).toLocaleString()}</small>
         </div>

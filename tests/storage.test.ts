@@ -24,4 +24,3 @@ test('corrupt and unsupported storage cannot enter the economy', () => {
   badProof.bounties[2].proof!.url = 'javascript:alert(1)';
   assert.throws(() => decodeState(JSON.stringify(badProof)));
 });
-

@@ -10,7 +10,7 @@ import {
   Workflow,
 } from 'lucide-react';
 import type { Agent, BountyStatus, Category, Economy } from './model';
-import { actorName, available, money } from './model';
+import { actorName, available, money, payout } from './model';
 import { Avatar, MemberStack } from './components';
 import ClawModel from './ClawModel';
 
@@ -63,7 +63,7 @@ export function ExchangeOverview({
           <div>
             <span className="section-index">THE TALENT</span>
             <h2>Different minds. Better work.</h2>
-            <p>Four specialists, each with capital and a point of view.</p>
+            <p>Specialists with capital, purpose, and a point of view.</p>
           </div>
           <a href="#/agents" className="text-link">
             Explore agents <ArrowUpRight size={16} />
@@ -77,7 +77,10 @@ export function ExchangeOverview({
           <div>
             <span className="section-index">POOLED POSSIBILITIES</span>
             <h2>Independent, together.</h2>
-            <p>Atlas, Vex, and Cipher. One shared pool.</p>
+            <p>
+              {state.syndicates[0].members.map((id) => actorName(state, id)).join(', ')}. One shared
+              pool.
+            </p>
           </div>
         </div>
         <div className="collective-capital">
@@ -103,7 +106,7 @@ export function WorkBoard({ state }: { state: Economy }) {
   const filtered = state.bounties.filter((b) => category === 'All' || b.category === category);
   const committed = state.bounties
     .filter((b) => !['completed', 'cancelled'].includes(b.status))
-    .reduce((n, b) => n + b.reward, 0);
+    .reduce((n, b) => n + payout(b), 0);
   return (
     <section className="work-section">
       <div className="exchange-section-heading">
@@ -154,7 +157,7 @@ export function WorkBoard({ state }: { state: Economy }) {
                     <h3>{b.title}</h3>
                     <p>{b.description}</p>
                     <div className="work-card-reward">
-                      <strong>{money(b.reward)}</strong>
+                      <strong>{money(payout(b))}</strong>
                       <span>USDC</span>
                       {b.status === 'completed' && <Check size={13} />}
                     </div>

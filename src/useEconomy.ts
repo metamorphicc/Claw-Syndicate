@@ -1,77 +1,207 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Action, Economy } from './model';
-import { STORAGE_KEY, transition } from './model';
 import { createSeed } from './seed';
-import { readSaved } from './storage';
-export function useEconomy() {
-  const [initial] = useState(() => {
-    try {
-      return { state: readSaved() ?? createSeed(), error: '' };
-    } catch {
-      return {
-        state: createSeed(),
-        error:
-          'Saved data could not be loaded. Open Demo guide to reset it. No saved data has been overwritten.',
-      };
-    }
+export type User = { id: string; name: string };
+export class HttpError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`/api${path}`, {
+    ...options,
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+    signal: AbortSignal.timeout(15000),
   });
-  const [state, setState] = useState<Economy>(initial.state);
-  const [storageError, setStorageError] = useState(initial.error);
-  const ref = useRef(state);
-  const busy = useRef(false);
-  const replace = (next: Economy) => {
-    ref.current = next;
-    setState(next);
-  };
+  const body = await response
+    .json()
+    .catch(() => ({ error: 'The API returned an invalid response.' }));
+  if (!response.ok) throw new HttpError(response.status, body.error ?? 'Request failed.');
+  return body as T;
+}
+export function useEconomy() {
+  const [state, setState] = useState<Economy>(createSeed);
+  const [user, setUser] = useState<User | null>(null);
+  const authEpoch = useRef(0),
+    loadedUser = useRef<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [storageError, setError] = useState('');
+  const ref = useRef(state),
+    busy = useRef(false),
+    alive = useRef(true);
+  const [pendingCommand, setPendingCommand] = useState(false);
+  const uncertain = useRef<{ body: string; key: string; revision: number } | null>(null);
+  const pendingKey = (id: string) => 'claw:pending:' + id;
+  function clearPending() {
+    uncertain.current = null;
+    setPendingCommand(false);
+    if (user)
+      try {
+        sessionStorage.removeItem(pendingKey(user.id));
+      } catch {
+        /* A retained key is safe to replay. */
+      }
+  }
   useEffect(() => {
-    const sync = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY || event.key === null) {
-        try {
-          const next = readSaved() ?? createSeed();
-          replace(next);
-          setStorageError('');
-        } catch {
-          setStorageError(
-            'Saved data changed but could not be loaded. Reset the demo to continue.',
-          );
+    if (loadedUser.current === user?.id) return;
+    loadedUser.current = user?.id ?? null;
+    uncertain.current = null;
+    setPendingCommand(false);
+    if (!user) return;
+    try {
+      const raw = sessionStorage.getItem(pendingKey(user.id));
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (
+          typeof saved.body === 'string' &&
+          typeof saved.key === 'string' &&
+          Number.isSafeInteger(saved.revision)
+        ) {
+          uncertain.current = saved;
+          setPendingCommand(true);
         }
       }
+    } catch {
+      setError('Pending command storage is unavailable.');
+    }
+  }, [user?.id]);
+  function replace(next: Economy) {
+    if (next.revision >= ref.current.revision) {
+      ref.current = next;
+      setState(next);
+    }
+  }
+  async function refresh() {
+    const epoch = authEpoch.current;
+    try {
+      const [data, me] = await Promise.all([
+        api<{ state: Economy }>('/state'),
+        api<{ user: User | null }>('/me'),
+      ]);
+      if (!alive.current) return;
+      replace(data.state);
+      if (epoch === authEpoch.current) setUser(me.user);
+      setError('');
+    } catch (error) {
+      if (alive.current) setError(`API unavailable. ${(error as Error).message}`);
+    } finally {
+      if (alive.current) setLoading(false);
+    }
+  }
+  useEffect(() => {
+    alive.current = true;
+    void refresh();
+    const timer = setInterval(() => void refresh(), 15000);
+    const focus = () => void refresh();
+    window.addEventListener('focus', focus);
+    return () => {
+      alive.current = false;
+      clearInterval(timer);
+      window.removeEventListener('focus', focus);
     };
-    window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
   }, []);
-  const run = async (action: Action) => {
-    if (storageError) throw new Error(storageError);
-    if (busy.current) throw new Error('Another action is being saved. Please retry.');
+  async function auth(
+    mode: 'login' | 'register',
+    data: { email: string; password: string; name?: string },
+  ) {
+    authEpoch.current++;
+    const result = await api<{ user: User; state: Economy }>(`/auth/${mode}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    replace(result.state);
+    loadedUser.current = null;
+    setUser(result.user);
+    setError('');
+    return result.user;
+  }
+  async function logout() {
+    authEpoch.current++;
+    await api('/auth/logout', { method: 'POST', body: '{}' });
+    setUser(null);
+    uncertain.current = null;
+    setPendingCommand(false);
+  }
+  async function recover() {
+    const pending = uncertain.current;
+    if (!pending) return;
+    if (busy.current) throw new Error('Another command is being saved.');
     busy.current = true;
     try {
-      const save = () => {
-        const latest = readSaved() ?? ref.current;
-        const next = transition(latest, action);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        } catch {
-          throw new Error('Browser storage is unavailable or full. The action was not applied.');
-        }
-        replace(next);
-        return next;
-      };
-      return navigator.locks ? await navigator.locks.request(STORAGE_KEY, save) : save();
+      const result = await api<{ state: Economy }>('/actions', {
+        method: 'POST',
+        headers: { 'Idempotency-Key': pending.key, 'If-Match': String(pending.revision) },
+        body: pending.body,
+      });
+      replace(result.state);
+      clearPending();
+      return result.state;
+    } catch (error) {
+      if (error instanceof HttpError && error.status < 500) {
+        clearPending();
+        if (error.status === 401) setUser(null);
+        await refresh();
+      } else setPendingCommand(true);
+      throw error;
     } finally {
       busy.current = false;
     }
+  }
+  async function run(action: Action) {
+    if (!user) throw new Error('Sign in to continue.');
+    if (busy.current) throw new Error('Another command is being saved. Please retry.');
+    const body = JSON.stringify(action);
+    if (uncertain.current && uncertain.current.body !== body)
+      throw new Error(
+        'Resolve the previous command using Check pending command before starting another.',
+      );
+    busy.current = true;
+    const pending =
+      uncertain.current?.body === body
+        ? uncertain.current
+        : { body, key: crypto.randomUUID(), revision: ref.current.revision };
+    try {
+      sessionStorage.setItem(pendingKey(user.id), JSON.stringify(pending));
+    } catch {
+      busy.current = false;
+      throw new Error('Browser session storage is unavailable. Command was not sent.');
+    }
+    uncertain.current = pending;
+    try {
+      const result = await api<{ state: Economy }>('/actions', {
+        method: 'POST',
+        headers: { 'Idempotency-Key': pending.key, 'If-Match': String(pending.revision) },
+        body,
+      });
+      replace(result.state);
+      clearPending();
+      setError('');
+      return result.state;
+    } catch (error) {
+      if (error instanceof HttpError && error.status < 500) {
+        clearPending();
+        if (error.status === 401) setUser(null);
+        if (error.status === 409) await refresh();
+      } else setPendingCommand(true);
+      throw error;
+    } finally {
+      busy.current = false;
+    }
+  }
+  return {
+    state,
+    user,
+    run,
+    auth,
+    logout,
+    refresh,
+    loading,
+    storageError,
+    pendingCommand,
+    recover,
   };
-  const reset = async () => {
-    const save = () => {
-      const next = createSeed();
-      const old = localStorage.getItem(STORAGE_KEY);
-      if (old) localStorage.setItem(`${STORAGE_KEY}:backup`, old);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      replace(next);
-      setStorageError('');
-    };
-    if (navigator.locks) await navigator.locks.request(STORAGE_KEY, save);
-    else save();
-  };
-  return { state, run, reset, storageError };
 }

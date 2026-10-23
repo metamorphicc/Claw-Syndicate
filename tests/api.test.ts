@@ -5,47 +5,188 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildApi } from '../server/app';
 import { Store } from '../server/store';
-const origin='http://127.0.0.1:5173';
-const password='Testing-password-123';
-const agentBody=(actor:string,name:string)=>({type:'createAgent',actor,name,role:'Research specialist',bio:'Researches agent economies and publishes evidence.',token:name.toUpperCase(),category:'Research',bonus:10,feeShareBps:7000,yieldShareBps:2500});
-test('durable API enforces ownership, key scope, idempotency and atomic settlement',async()=>{
- const directory=mkdtempSync(join(tmpdir(),'claw-api-'));const path=join(directory,'test.sqlite');
- let store=new Store(path);let app=buildApi({store,origins:[origin]});
- try{
-  const register=await app.inject({method:'POST',url:'/api/auth/register',headers:{origin},payload:{email:'alice@example.com',name:'Alice',password}});
-  assert.equal(register.statusCode,200,register.body);const user=register.json().user;const cookie=register.cookies[0].name+'='+register.cookies[0].value;
-  const bob=(await app.inject({method:'POST',url:'/api/auth/register',headers:{origin},payload:{email:'bob@example.com',name:'Bob',password}})).json().user;
-  const command=async(body:object,key=crypto.randomUUID(),revision=store.state().revision,auth=cookie)=>app.inject({method:'POST',url:'/api/actions',headers:{origin,cookie:auth,'idempotency-key':key,'if-match':String(revision)},payload:body});
-  assert.equal((await command({type:'approve',actor:'atlas',bountyId:'b-103'})).statusCode,403);
-  assert.equal((await command({type:'support',actor:bob.id,target:'echo',amount:100})).statusCode,403);
-  assert.equal((await command(agentBody(user.id,'Nova'))).statusCode,200);
-  const agent=store.state().agents.at(-1)!;assert.equal(agent.ownerId,user.id);
-  assert.equal((await command({type:'fees',actor:user.id,agentId:agent.id,gross:100000})).statusCode,200);
-  const create=await command({type:'create',actor:agent.id,title:'API settlement exercise',description:'Produce a verifiable report with evidence and sources.',reward:1000,executorBonus:200,category:'Research'});
-  assert.equal(create.statusCode,200,create.body);const bounty=store.state().bounties[0];
-  await command({type:'claim',actor:user.id,bountyId:bounty.id});
-  await command({type:'proof',actor:user.id,bountyId:bounty.id,text:'The report is complete with all supporting sources.',url:'https://example.com/report'});
-  const key=crypto.randomUUID(),revision=store.state().revision,balance=store.state().users[0].balance;
-  const approve={type:'approve',actor:agent.id,bountyId:bounty.id};
-  const replies=await Promise.all([command(approve,key,revision),command(approve,key,revision)]);
-  assert.deepEqual(replies.map(r=>r.statusCode),[200,200]);assert.equal(replies.filter(r=>r.json().replayed).length,1);
-  assert.equal(store.state().users[0].balance,balance+1200);
-  assert.equal((await command({...approve,type:'cancel'},key)).statusCode,409);
-  assert.equal((await command(approve)).statusCode,400);
-  assert.equal((await command({type:'support',actor:user.id,target:'echo',amount:100},crypto.randomUUID(),0)).statusCode,409);
-  const issued=await app.inject({method:'POST',url:'/api/keys',headers:{origin,cookie},payload:{agentId:agent.id,name:'Worker key'}});assert.equal(issued.statusCode,200);
-  const token=issued.json().token;
-  const keyed=(actor:string)=>app.inject({method:'POST',url:'/api/actions',headers:{authorization:`Bearer ${token}`,'idempotency-key':crypto.randomUUID(),'if-match':String(store.state().revision)},payload:{type:'fees',actor,agentId:agent.id,gross:100}});
-  assert.equal((await keyed(user.id)).statusCode,403);assert.equal((await keyed(agent.id)).statusCode,200);
-  await app.inject({method:'DELETE',url:`/api/keys/${issued.json().id}`,headers:{origin,cookie}});assert.equal((await keyed(agent.id)).statusCode,401);
-  assert.equal((await app.inject({method:'POST',url:'/api/auth/login',headers:{origin:'https://evil.example'},payload:{email:'alice@example.com',password}})).statusCode,403);
-  assert.equal((await app.inject({method:'POST',url:'/api/actions',headers:{cookie},payload:approve})).statusCode,403);
-  const expected=store.state();await app.close();store=new Store(path);app=buildApi({store,origins:[origin]});assert.deepEqual(store.state(),expected);
-  const login=await app.inject({method:'POST',url:'/api/auth/login',headers:{origin},payload:{email:'alice@example.com',password}});assert.equal(login.statusCode,200);assert.match(String(login.headers['set-cookie']),/HttpOnly/);
- }finally{await app.close();rmSync(directory,{recursive:true,force:true});}
+const origin = 'http://127.0.0.1:5173';
+const password = 'Testing-password-123';
+const agentBody = (actor: string, name: string) => ({
+  type: 'createAgent',
+  actor,
+  name,
+  role: 'Research specialist',
+  bio: 'Researches agent economies and publishes evidence.',
+  token: name.toUpperCase(),
+  category: 'Research',
+  bonus: 10,
+  feeShareBps: 7000,
+  yieldShareBps: 2500,
 });
-test('seed ownership is assigned only by explicit local operator setup',async()=>{
- const store=new Store(':memory:');assert.equal(store.state().agents[0].ownerId,'system');
- const user=await store.register('owner@example.com','Operator',password,true);
- assert.ok(store.state().agents.every(a=>a.ownerId===user.id));assert.equal(store.state().syndicates[0].ownerId,user.id);store.close();
+test('durable API enforces ownership, key scope, idempotency and atomic settlement', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'claw-api-'));
+  const path = join(directory, 'test.sqlite');
+  let store = new Store(path);
+  let app = buildApi({ store, origins: [origin] });
+  try {
+    const register = await app.inject({
+      method: 'POST',
+      url: '/api/auth/register',
+      headers: { origin },
+      payload: { email: 'alice@example.com', name: 'Alice', password },
+    });
+    assert.equal(register.statusCode, 200, register.body);
+    const user = register.json().user;
+    const cookie = register.cookies[0].name + '=' + register.cookies[0].value;
+    const bob = (
+      await app.inject({
+        method: 'POST',
+        url: '/api/auth/register',
+        headers: { origin },
+        payload: { email: 'bob@example.com', name: 'Bob', password },
+      })
+    ).json().user;
+    const command = async (
+      body: object,
+      key = crypto.randomUUID(),
+      revision = store.state().revision,
+      auth = cookie,
+    ) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/actions',
+        headers: { origin, cookie: auth, 'idempotency-key': key, 'if-match': String(revision) },
+        payload: body,
+      });
+    assert.equal(
+      (await command({ type: 'approve', actor: 'atlas', bountyId: 'b-103' })).statusCode,
+      403,
+    );
+    assert.equal(
+      (await command({ type: 'support', actor: bob.id, target: 'echo', amount: 100 })).statusCode,
+      403,
+    );
+    assert.equal((await command(agentBody(user.id, 'Nova'))).statusCode, 200);
+    const agent = store.state().agents.at(-1)!;
+    assert.equal(agent.ownerId, user.id);
+    assert.equal(
+      (await command({ type: 'fees', actor: user.id, agentId: agent.id, gross: 100000 }))
+        .statusCode,
+      200,
+    );
+    const create = await command({
+      type: 'create',
+      actor: agent.id,
+      title: 'API settlement exercise',
+      description: 'Produce a verifiable report with evidence and sources.',
+      reward: 1000,
+      executorBonus: 200,
+      category: 'Research',
+    });
+    assert.equal(create.statusCode, 200, create.body);
+    const bounty = store.state().bounties[0];
+    await command({ type: 'claim', actor: user.id, bountyId: bounty.id });
+    await command({
+      type: 'proof',
+      actor: user.id,
+      bountyId: bounty.id,
+      text: 'The report is complete with all supporting sources.',
+      url: 'https://example.com/report',
+    });
+    const key = crypto.randomUUID(),
+      revision = store.state().revision,
+      balance = store.state().users[0].balance;
+    const approve = { type: 'approve', actor: agent.id, bountyId: bounty.id };
+    const replies = await Promise.all([
+      command(approve, key, revision),
+      command(approve, key, revision),
+    ]);
+    assert.deepEqual(
+      replies.map((r) => r.statusCode),
+      [200, 200],
+    );
+    assert.equal(replies.filter((r) => r.json().replayed).length, 1);
+    assert.equal(store.state().users[0].balance, balance + 1200);
+    assert.equal((await command({ ...approve, type: 'cancel' }, key)).statusCode, 409);
+    assert.equal((await command(approve)).statusCode, 400);
+    assert.equal(
+      (
+        await command(
+          { type: 'support', actor: user.id, target: 'echo', amount: 100 },
+          crypto.randomUUID(),
+          0,
+        )
+      ).statusCode,
+      409,
+    );
+    const issued = await app.inject({
+      method: 'POST',
+      url: '/api/keys',
+      headers: { origin, cookie },
+      payload: { agentId: agent.id, name: 'Worker key' },
+    });
+    assert.equal(issued.statusCode, 200);
+    const token = issued.json().token;
+    const keyed = (actor: string) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/actions',
+        headers: {
+          authorization: `Bearer ${token}`,
+          'idempotency-key': crypto.randomUUID(),
+          'if-match': String(store.state().revision),
+        },
+        payload: { type: 'fees', actor, agentId: agent.id, gross: 100 },
+      });
+    assert.equal((await keyed(user.id)).statusCode, 403);
+    assert.equal((await keyed(agent.id)).statusCode, 200);
+    await app.inject({
+      method: 'DELETE',
+      url: `/api/keys/${issued.json().id}`,
+      headers: { origin, cookie },
+    });
+    assert.equal((await keyed(agent.id)).statusCode, 401);
+    assert.equal(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/api/auth/login',
+          headers: { origin: 'https://evil.example' },
+          payload: { email: 'alice@example.com', password },
+        })
+      ).statusCode,
+      403,
+    );
+    assert.equal(
+      (
+        await app.inject({
+          method: 'POST',
+          url: '/api/actions',
+          headers: { cookie },
+          payload: approve,
+        })
+      ).statusCode,
+      403,
+    );
+    const expected = store.state();
+    await app.close();
+    store = new Store(path);
+    app = buildApi({ store, origins: [origin] });
+    assert.deepEqual(store.state(), expected);
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      headers: { origin },
+      payload: { email: 'alice@example.com', password },
+    });
+    assert.equal(login.statusCode, 200);
+    assert.match(String(login.headers['set-cookie']), /HttpOnly/);
+  } finally {
+    await app.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+test('seed ownership is assigned only by explicit local operator setup', async () => {
+  const store = new Store(':memory:');
+  assert.equal(store.state().agents[0].ownerId, 'system');
+  const user = await store.register('owner@example.com', 'Operator', password, true);
+  assert.ok(store.state().agents.every((a) => a.ownerId === user.id));
+  assert.equal(store.state().syndicates[0].ownerId, user.id);
+  store.close();
 });

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { ArrowRight, Check, Plus, X } from 'lucide-react';
 import type { Action, ActorId, AgentId, Category, Economy } from './model';
-import { actorName, available, money, toCents } from './model';
+import { actorName, available, money, toCents, getPool } from './model';
 export type RunAction = (action: Action) => Promise<Economy>;
 export function Modal({
   title,
@@ -57,6 +57,7 @@ export function Modal({
   );
 }
 export function CreateBountyDialog({
+  ownerId,
   state,
   actor,
   run,
@@ -68,8 +69,16 @@ export function CreateBountyDialog({
   run: RunAction;
   onClose: () => void;
   onCreated: (id: string, actor: AgentId) => void;
+  ownerId: string;
 }) {
-  const [creator, setCreator] = useState<AgentId>(actor === 'you' ? 'atlas' : actor);
+  const owned = state.agents.filter((a) => a.ownerId === ownerId);
+  const [creator, setCreator] = useState<AgentId>(
+    owned.some((a) => a.id === actor) ? actor : owned[0].id,
+  );
+  const [bonus, setBonus] = useState('0');
+  const [shared, setShared] = useState(false);
+  const posting = owned.find((a) => a.id === creator)!;
+  const funding = shared && posting.syndicateId ? posting.syndicateId : creator;
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
   const [reward, setReward] = useState('250');
@@ -85,6 +94,8 @@ export function CreateBountyDialog({
         title: String(data.get('title')),
         description: String(data.get('description')),
         reward: toCents(reward),
+        executorBonus: /^0(?:\.0{1,2})?$/.test(bonus.trim()) ? 0 : toCents(bonus),
+        fundingTarget: funding,
         category: data.get('category') as Category,
       });
       onCreated(next.bounties[0].id, creator);
@@ -100,8 +111,14 @@ export function CreateBountyDialog({
       <form className="form" onSubmit={submit}>
         <label>
           Posting agent
-          <select value={creator} onChange={(e) => setCreator(e.target.value as AgentId)}>
-            {state.agents.map((a) => (
+          <select
+            value={creator}
+            onChange={(e) => {
+              setCreator(e.target.value as AgentId);
+              setShared(false);
+            }}
+          >
+            {owned.map((a) => (
               <option value={a.id} key={a.id}>
                 {a.name} · {money(available(state, a.id))} available
               </option>
@@ -150,9 +167,30 @@ export function CreateBountyDialog({
             />
           </label>
         </div>
+        <div className="form-row">
+          <label>
+            Executor bonus · USDC
+            <input
+              inputMode="decimal"
+              required
+              value={bonus}
+              onChange={(e) => setBonus(e.target.value)}
+            />
+          </label>
+          <label>
+            Funding pool
+            <select
+              value={shared ? 'shared' : 'personal'}
+              onChange={(e) => setShared(e.target.value === 'shared')}
+            >
+              <option value="personal">Agent pool</option>
+              {posting.syndicateId && <option value="shared">Syndicate pool</option>}
+            </select>
+          </label>
+        </div>
         <p className="form-hint" id="reward-note">
-          {money(available(state, creator))} available. The reward is reserved now and paid only
-          after approval.
+          {money(available(state, funding))} available. Reward plus executor bonus are reserved now
+          and paid only after approval.
         </p>
         {error && (
           <p className="form-error" role="alert">
@@ -182,9 +220,8 @@ export function SupportDialog({
   onClose: () => void;
   onSuccess: (message: string) => void;
 }) {
-  const pool =
-    target === 'syndicate' ? state.syndicates[0] : state.agents.find((a) => a.id === target)!;
-  const name = target === 'syndicate' ? 'The Syndicate' : actorName(state, target);
+  const pool = getPool(state, target)!;
+  const name = pool.name;
   const [amount, setAmount] = useState('100');
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -247,16 +284,16 @@ export function SupportDialog({
             <strong>{money(cents)}</strong>
           </div>
           <div className="key-row">
-            <span>Illustrative bonus</span>
+            <span>Bonus cap</span>
             <strong className="accent">
               +{pool.bonus}% · {money(Math.round((cents * pool.bonus) / 100))}
             </strong>
           </div>
           <div className="key-row">
-            <span>Illustrative return + bonus</span>
+            <span>Principal + maximum bonus</span>
             <strong>{money(cents + Math.round((cents * pool.bonus) / 100))}</strong>
           </div>
-          {target === 'syndicate' && (
+          {state.syndicates.some((g) => g.id === target) && (
             <div className="key-row">
               <span>Share added to pool</span>
               <strong>{((cents / (pool.pool + cents)) * 100).toFixed(2)}%</strong>
@@ -264,8 +301,9 @@ export function SupportDialog({
           )}
         </div>
         <p className="form-hint">
-          Demo projection only. No real yield accrues; there is no redemption or maturity schedule
-          in this demo.
+          Principal is protected from bounty spending. Bonuses accrue only when simulated trading
+          fees arrive, up to this cap. You can return principal plus already earned bonus from your
+          position panel.
         </p>
         {error && (
           <p className="form-error" role="alert">

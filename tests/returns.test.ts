@@ -2,41 +2,87 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { transition, available, protectedCapital, bonusCap, assertInvariants } from '../src/model';
 import { createSeed } from '../src/seed';
-test('fees fund capped backer bonuses and redemption pays principal plus earned bonus once',()=>{
- let s=transition(createSeed(),{type:'support',actor:'you',target:'syndicate',amount:10000},undefined,'position');
- const free=available(s,'syndicate');
- assert.equal(protectedCapital(s,'syndicate'),10000);
- s=transition(s,{type:'fees',actor:'atlas',agentId:'atlas',gross:1000});
- assert.equal(s.fees[0].credited,700);assert.equal(s.platformBalance,300);
- assert.equal(s.contributions[0].accruedBonus,175);
- assert.equal(available(s,'syndicate'),free+525);
- s=transition(s,{type:'fees',actor:'you',agentId:'atlas',gross:100000});
- assert.equal(s.contributions[0].accruedBonus,bonusCap(s.contributions[0]));
- const wallet=s.wallet;
- s=transition(s,{type:'redeem',actor:'you',contributionId:'position'});
- assert.equal(s.wallet,wallet+10900);
- assert.throws(()=>transition(s,{type:'redeem',actor:'you',contributionId:'position'}));
- assertInvariants(s);
+test('fees fund capped backer bonuses and redemption pays principal plus earned bonus once', () => {
+  let s = transition(
+    createSeed(),
+    { type: 'support', actor: 'you', target: 'syndicate', amount: 10000 },
+    undefined,
+    'position',
+  );
+  const free = available(s, 'syndicate');
+  assert.equal(protectedCapital(s, 'syndicate'), 10000);
+  s = transition(s, { type: 'fees', actor: 'atlas', agentId: 'atlas', gross: 1000 });
+  assert.equal(s.fees[0].credited, 700);
+  assert.equal(s.platformBalance, 300);
+  assert.equal(s.contributions[0].accruedBonus, 175);
+  assert.equal(available(s, 'syndicate'), free + 525);
+  s = transition(s, { type: 'fees', actor: 'you', agentId: 'atlas', gross: 100000 });
+  assert.equal(s.contributions[0].accruedBonus, bonusCap(s.contributions[0]));
+  const wallet = s.wallet;
+  s = transition(s, { type: 'redeem', actor: 'you', contributionId: 'position' });
+  assert.equal(s.wallet, wallet + 10900);
+  assert.throws(() => transition(s, { type: 'redeem', actor: 'you', contributionId: 'position' }));
+  assertInvariants(s);
 });
-test('protected principal cannot fund rewards; reward plus executor bonus reserved and paid',()=>{
- let s=createSeed(); const free=available(s,'echo');
- s=transition(s,{type:'support',actor:'you',target:'echo',amount:10000});
- assert.equal(available(s,'echo'),free);
- assert.throws(()=>transition(s,{type:'create',actor:'echo',title:'Spend protected money',description:'A detailed assignment for another participant.',reward:free+1,category:'Content'}));
- s=transition(s,{type:'create',actor:'echo',title:'Reward and bonus',description:'A detailed assignment for another participant.',reward:1000,executorBonus:200,category:'Content'},undefined,'bonus');
- assert.equal(available(s,'echo'),free-1200);
- s=transition(s,{type:'claim',actor:'you',bountyId:'bonus'});
- s=transition(s,{type:'proof',actor:'you',bountyId:'bonus',text:'Completed all the requested work and attached evidence.',url:'https://example.com/work'});
- const wallet=s.wallet;
- s=transition(s,{type:'approve',actor:'echo',bountyId:'bonus'});
- assert.equal(s.wallet,wallet+1200);assert.equal(protectedCapital(s,'echo'),10000);
+test('protected principal cannot fund rewards; reward plus executor bonus reserved and paid', () => {
+  let s = createSeed();
+  const free = available(s, 'echo');
+  s = transition(s, { type: 'support', actor: 'you', target: 'echo', amount: 10000 });
+  assert.equal(available(s, 'echo'), free);
+  assert.throws(() =>
+    transition(s, {
+      type: 'create',
+      actor: 'echo',
+      title: 'Spend protected money',
+      description: 'A detailed assignment for another participant.',
+      reward: free + 1,
+      category: 'Content',
+    }),
+  );
+  s = transition(
+    s,
+    {
+      type: 'create',
+      actor: 'echo',
+      title: 'Reward and bonus',
+      description: 'A detailed assignment for another participant.',
+      reward: 1000,
+      executorBonus: 200,
+      category: 'Content',
+    },
+    undefined,
+    'bonus',
+  );
+  assert.equal(available(s, 'echo'), free - 1200);
+  s = transition(s, { type: 'claim', actor: 'you', bountyId: 'bonus' });
+  s = transition(s, {
+    type: 'proof',
+    actor: 'you',
+    bountyId: 'bonus',
+    text: 'Completed all the requested work and attached evidence.',
+    url: 'https://example.com/work',
+  });
+  const wallet = s.wallet;
+  s = transition(s, { type: 'approve', actor: 'echo', bountyId: 'bonus' });
+  assert.equal(s.wallet, wallet + 1200);
+  assert.equal(protectedCapital(s, 'echo'), 10000);
 });
-test('two backers share funded yield proportionally with cent rounding and caps',()=>{
- let s=transition(createSeed(),{type:'support',actor:'you',target:'echo',amount:10000},undefined,'a');
- s=transition(s,{type:'support',actor:'vex',target:'echo',amount:30000},undefined,'b');
- s=transition(s,{type:'fees',actor:'echo',agentId:'echo',gross:10000});
- assert.equal(s.fees[0].yieldAccrued,1750);
- assert.equal(s.contributions.find(c=>c.id==='a')!.accruedBonus,438);
- assert.equal(s.contributions.find(c=>c.id==='b')!.accruedBonus,1312);
- assertInvariants(s);
+test('two backers share funded yield proportionally with cent rounding and caps', () => {
+  let s = transition(
+    createSeed(),
+    { type: 'support', actor: 'you', target: 'echo', amount: 10000 },
+    undefined,
+    'a',
+  );
+  s = transition(
+    s,
+    { type: 'support', actor: 'vex', target: 'echo', amount: 30000 },
+    undefined,
+    'b',
+  );
+  s = transition(s, { type: 'fees', actor: 'echo', agentId: 'echo', gross: 10000 });
+  assert.equal(s.fees[0].yieldAccrued, 1750);
+  assert.equal(s.contributions.find((c) => c.id === 'a')!.accruedBonus, 438);
+  assert.equal(s.contributions.find((c) => c.id === 'b')!.accruedBonus, 1312);
+  assertInvariants(s);
 });

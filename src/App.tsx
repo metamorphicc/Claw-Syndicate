@@ -11,31 +11,35 @@ import {
   LayoutDashboard,
   ListTodo,
   Plus,
-  RotateCcw,
   Search,
   Users,
   Wallet,
   X,
 } from 'lucide-react';
 import type { ActorId, AgentId } from './model';
-import { actorName, available, money, reserved } from './model';
+import { actorName, available, money, reserved, protectedCapital, payout, poolName } from './model';
 import { useEconomy } from './useEconomy';
+import { AuthDialog, AccountDialog } from './Auth';
+import { EntityDialog, EconomyPage, SyndicatesPage, Positions } from './Workspace';
 import { CreateBountyDialog, Modal, SupportDialog } from './dialogs';
 import { BountyActions } from './BountyActions';
 import { AgentRoster, ExchangeOverview } from './Exchange';
-import {
-  ActivityList,
-  AgentCard,
-  Avatar,
-  BountyList,
-  MemberStack,
-  SectionTitle,
-  Status,
-} from './components';
+import { ActivityList, Avatar, BountyList, SectionTitle, Status } from './components';
 
 export default function App() {
-  const { state, run, reset, storageError } = useEconomy();
-  const [actor, setActor] = useState<ActorId>('you');
+  const {
+    state,
+    user,
+    run,
+    auth,
+    logout,
+    refresh,
+    loading,
+    storageError,
+    pendingCommand,
+    recover,
+  } = useEconomy();
+  const [actor, setActor] = useState<ActorId>('guest');
   const [route, setRoute] = useState(location.hash.slice(1) || '/');
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
@@ -43,7 +47,29 @@ export default function App() {
   const [creating, setCreating] = useState(false);
   const [supportTarget, setSupportTarget] = useState<AgentId | 'syndicate' | null>(null);
   const [toast, setToast] = useState('');
-  const [resetting, setResetting] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [entity, setEntity] = useState<'agent' | 'syndicate' | null>(null);
+  const identities = user
+    ? [user.id, ...state.agents.filter((a) => a.ownerId === user.id).map((a) => a.id)]
+    : [];
+  useEffect(() => {
+    if (!identities.includes(actor)) setActor(user?.id ?? 'guest');
+  }, [user?.id, state.agents, actor]);
+  const support = (id: string) => {
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    setSupportTarget(id);
+  };
+  const createEntity = (kind: 'agent' | 'syndicate') => {
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    setEntity(kind);
+  };
   useEffect(() => {
     if (!toast) return;
     const id = window.setTimeout(() => setToast(''), 6500);
@@ -77,9 +103,33 @@ export default function App() {
     { id: 'agents', label: 'Agents', icon: Users, href: '#/agents' },
     { id: 'bounties', label: 'Bounty market', icon: ListTodo, href: '#/bounties' },
     { id: 'syndicate', label: 'Syndicate', icon: Coins, href: '#/syndicate' },
+    { id: 'economy', label: 'Economy', icon: Coins, href: '#/economy' },
     { id: 'activity', label: 'Activity', icon: Activity, href: '#/activity' },
   ];
-  const createBounty = () => setCreating(true);
+  const createBounty = () => {
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    if (!state.agents.some((a) => a.ownerId === user.id)) {
+      setEntity('agent');
+      return;
+    }
+    setCreating(true);
+  };
+  if (loading || (storageError && state.revision === 0))
+    return (
+      <div className="connection-screen">
+        <img src="/claw.svg" width="48" alt="Claw Syndicate" />
+        <h1>{loading ? 'Connecting to the economy…' : 'API unavailable'}</h1>
+        <p>{loading ? 'Loading shared balances and account.' : storageError}</p>
+        {!loading && (
+          <button className="button" onClick={() => void refresh()}>
+            Retry connection
+          </button>
+        )}
+      </div>
+    );
   return (
     <div className="app-shell">
       <a
@@ -131,7 +181,7 @@ export default function App() {
           <div className="topbar-actions">
             <span className="demo-label">
               <span className="online-dot" />
-              Demo network
+              Shared simulation
             </span>
             <button
               className="balance-button"
@@ -148,25 +198,35 @@ export default function App() {
             >
               <CircleHelp size={16} />
             </button>
-            <div className="identity">
-              <Avatar id={actor} size={28} />
-              <label className="sr-only" htmlFor="identity">
-                Acting as
-              </label>
-              <select
-                id="identity"
-                value={actor}
-                onChange={(e) => setActor(e.target.value as ActorId)}
-              >
-                <option value="you">You · demo user</option>
-                {state.agents.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name} · agent
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={13} />
-            </div>
+            {user ? (
+              <div className="identity">
+                <Avatar id={actor} size={28} />
+                <label className="sr-only" htmlFor="identity">
+                  Acting as
+                </label>
+                <select
+                  id="identity"
+                  value={actor}
+                  onChange={(e) => setActor(e.target.value as ActorId)}
+                >
+                  <option value={user.id}>{user.name} · account</option>
+                  {state.agents
+                    .filter((a) => a.ownerId === user.id)
+                    .map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name} · agent
+                      </option>
+                    ))}
+                </select>
+                <ChevronDown size={13} />
+              </div>
+            ) : null}
+            <button
+              className="button"
+              onClick={() => (user ? setAccountOpen(true) : setAuthOpen(true))}
+            >
+              {user ? 'Account' : 'Sign in'}
+            </button>
           </div>
         </header>
         <main id="main" tabIndex={-1} className="main-content">
@@ -175,14 +235,37 @@ export default function App() {
               {storageError}
             </p>
           )}
+          {pendingCommand && (
+            <div className="storage-error" role="status">
+              A command has an unknown result. Check it before starting another.{' '}
+              <button
+                className="button"
+                onClick={async () => {
+                  try {
+                    await recover();
+                    setToast('Previous command resolved. Balances refreshed.');
+                  } catch (e) {
+                    setToast((e as Error).message);
+                  }
+                }}
+              >
+                Check pending command
+              </button>
+            </div>
+          )}
           {section === 'overview' && <ExchangeOverview state={state} createBounty={createBounty} />}
           {route === '/agents' && (
             <>
               <PageHeading
                 eyebrow="THE COLLECTIVE"
                 title="Meet your next collaborator."
-                description="Four specialists. Four independent pools. An economy of possibilities."
+                description="Specialized agents. Independent pools. An economy of possibilities."
               />
+              <div className="spaced">
+                <button className="button primary" onClick={() => createEntity('agent')}>
+                  Create agent
+                </button>
+              </div>
               <div className="directory-tools">
                 <Search size={17} />
                 <input
@@ -223,7 +306,7 @@ export default function App() {
                   </h1>
                   <p>{agent.role}</p>
                 </div>
-                <button className="button primary" onClick={() => setSupportTarget(agent.id)}>
+                <button className="button primary" onClick={() => support(agent.id)}>
                   <Plus size={16} />
                   Support agent
                 </button>
@@ -254,18 +337,28 @@ export default function App() {
                     <span>{money(reserved(state, agent.id))}</span>
                   </div>
                   <div className="key-row">
+                    <span>Protected principal + earned bonuses</span>
+                    <strong>{money(protectedCapital(state, agent.id))}</strong>
+                  </div>
+                  <div className="key-row">
                     <span>Available capital</span>
                     <strong>{money(available(state, agent.id))}</strong>
                   </div>
                   <div className="pool-bonus">
-                    <span>Illustrative support bonus</span>
+                    <span>Backer bonus cap</span>
                     <strong>+{agent.bonus}%</strong>
                   </div>
                 </section>
               </div>
               <section className="spaced">
                 <SectionTitle title="Your support position" />
-                <Positions state={state} actor={actor} target={agent.id} />
+                <Positions
+                  state={state}
+                  actor={actor}
+                  target={agent.id}
+                  run={run}
+                  notify={setToast}
+                />
               </section>
               <section className="spaced">
                 <SectionTitle title="Posted bounties" />
@@ -361,7 +454,7 @@ export default function App() {
                 </div>
                 <div className="detail-reward">
                   <span>BOUNTY REWARD</span>
-                  <strong>{money(bounty.reward)}</strong>
+                  <strong>{money(payout(bounty))}</strong>
                   <small>USDC · simulated</small>
                 </div>
               </div>
@@ -415,6 +508,14 @@ export default function App() {
                 <section className="detail-panel action-panel">
                   <h2>Work & settlement</h2>
                   <div className="key-row">
+                    <span>Funding pool</span>
+                    <strong>{poolName(state, bounty.fundingTarget)}</strong>
+                  </div>
+                  <div className="key-row">
+                    <span>Executor bonus included</span>
+                    <strong>{money(bounty.executorBonus)}</strong>
+                  </div>
+                  <div className="key-row">
                     <span>Creator</span>
                     <strong>{actorName(state, bounty.creator)}</strong>
                   </div>
@@ -439,6 +540,9 @@ export default function App() {
                     state={state}
                     run={run}
                     switchActor={setActor}
+                    identities={identities}
+                    accountId={user?.id}
+                    signIn={() => setAuthOpen(true)}
                     notify={setToast}
                   />
                 </section>
@@ -453,50 +557,19 @@ export default function App() {
             </>
           )}
           {section === 'syndicate' && (
-            <>
-              <PageHeading
-                eyebrow="COLLECTIVE CAPITAL"
-                title="Independent minds. Shared upside."
-                description="A common pool gives specialized agents room to do more together."
-              />
-              <div className="syndicate-hero">
-                <div>
-                  <MemberStack ids={state.syndicates[0].members} />
-                  <h2>The Syndicate</h2>
-                  <p>
-                    Atlas brings intelligence. Vex brings execution.
-                    <br />
-                    Cipher builds the infrastructure.
-                  </p>
-                  <button className="button primary" onClick={() => setSupportTarget('syndicate')}>
-                    <Plus size={16} />
-                    Contribute to pool
-                  </button>
-                </div>
-                <div>
-                  <span className="eyebrow">SHARED POOL</span>
-                  <strong className="hero-value">{money(state.syndicates[0].pool)}</strong>
-                  <p>USDC · simulated capital</p>
-                  <span className="status status-open">
-                    +{state.syndicates[0].bonus}% illustrative bonus
-                  </span>
-                </div>
-              </div>
-              <section className="spaced">
-                <SectionTitle title="Your syndicate position" />
-                <Positions state={state} actor={actor} target="syndicate" />
-              </section>
-              <section className="spaced">
-                <SectionTitle title="Syndicate members" />
-                <div className="agent-grid three">
-                  {state.agents
-                    .filter((a) => state.syndicates[0].members.includes(a.id))
-                    .map((a) => (
-                      <AgentCard agent={a} state={state} key={a.id} />
-                    ))}
-                </div>
-              </section>
-            </>
+            <SyndicatesPage
+              state={state}
+              user={user}
+              actor={actor}
+              run={run}
+              create={() => createEntity('syndicate')}
+              support={support}
+              notify={setToast}
+              selected={route.split('/')[2]}
+            />
+          )}
+          {section === 'economy' && (
+            <EconomyPage state={state} user={user} actor={actor} run={run} notify={setToast} />
           )}
           {section === 'activity' && (
             <>
@@ -510,7 +583,9 @@ export default function App() {
               </div>
             </>
           )}
-          {!['overview', 'agents', 'bounties', 'syndicate', 'activity'].includes(section) ||
+          {!['overview', 'agents', 'bounties', 'syndicate', 'economy', 'activity'].includes(
+            section,
+          ) ||
           (route.startsWith('/agents/') && !agent) ||
           (route.startsWith('/bounties/') && !bounty) ? (
             <div className="empty">
@@ -534,7 +609,7 @@ export default function App() {
                 </span>
               </a>
               <span>
-                Local demo <i /> Simulated USDC <i /> Proof before payment
+                Shared simulation <i /> Simulated USDC <i /> Proof before payment
               </span>
               <button onClick={() => setHelp(true)}>
                 How it works <ArrowUpRight size={14} />
@@ -556,8 +631,9 @@ export default function App() {
           }}
         />
       )}
-      {creating && (
+      {creating && user && (
         <CreateBountyDialog
+          ownerId={user.id}
           state={state}
           actor={actor}
           run={run}
@@ -572,71 +648,56 @@ export default function App() {
           }}
         />
       )}
-      {help && (
-        <Modal
-          title="An economy you can explore."
-          onClose={() => {
-            setHelp(false);
-            setResetting(false);
+      {authOpen && (
+        <AuthDialog
+          auth={auth}
+          onClose={() => setAuthOpen(false)}
+          onSuccess={(u) => {
+            setActor(u.id);
+            setAuthOpen(false);
+            setToast('Signed in. Your workspace is ready.');
           }}
-        >
-          <p>
-            Use the identity selector at the top to act as a person or an agent. Each agent has its
-            own simulated pool and token.
-          </p>
+        />
+      )}
+      {accountOpen && user && (
+        <AccountDialog
+          user={user}
+          state={state}
+          logout={logout}
+          onClose={() => setAccountOpen(false)}
+        />
+      )}
+      {entity && user && (
+        <EntityDialog
+          kind={entity}
+          state={state}
+          user={user}
+          run={run}
+          onClose={() => setEntity(null)}
+          onCreated={(path) => {
+            setEntity(null);
+            location.hash = path;
+            setToast('Created. Record simulated fees in Economy to fund work.');
+          }}
+        />
+      )}
+      {help && (
+        <Modal title="An economy you can explore." onClose={() => setHelp(false)}>
+          <p>Sign in, then choose your account or an agent you own using the identity selector.</p>
           <ol className="guide-steps">
-            <li>Create a bounty as an agent. Its reward is reserved.</li>
-            <li>Switch to another agent or “You” and claim the work.</li>
-            <li>Submit a written proof and an http(s) link.</li>
-            <li>Switch back to the creator. Approve and pay.</li>
+            <li>Create an agent and record simulated trading fees in Economy.</li>
+            <li>Post a bounty. Reward and executor bonus are reserved.</li>
+            <li>Another participant claims the work and submits proof.</li>
+            <li>The creator reviews it and approves the payment.</li>
+            <li>
+              Support a pool; new fees fund earned bonuses. Return your principal and earned bonus
+              from the position panel.
+            </li>
           </ol>
-          <div className="key-row">
-            <span>Acting as</span>
-            <strong>{actorName(state, actor)}</strong>
-          </div>
-          <div className="key-row">
-            <span>Available balance</span>
-            <strong>{money(available(state, actor))} USDC</strong>
-          </div>
-          <p className="form-hint spaced">
-            All data stays in this browser. Tokens and bonuses are illustrative. No real trading or
-            blockchain transactions. Initial example.com deliverables are demo placeholders.
+          <p className="form-hint">
+            Data is shared through the API and stored on the operator’s PC. Tokens, fees, and
+            balances are simulations. No real trading or blockchain payments.
           </p>
-          <div className="guide-reset">
-            {resetting ? (
-              <>
-                <p>
-                  Reset all pools, bounties, and contributions to their seed values? The previous
-                  snapshot will be backed up in browser storage.
-                </p>
-                <button
-                  className="button danger"
-                  onClick={async () => {
-                    try {
-                      await reset();
-                      setHelp(false);
-                      setResetting(false);
-                      setActor('you');
-                      location.hash = '/';
-                      setToast('Demo restored to its initial state.');
-                    } catch {
-                      setToast('Reset failed: browser storage is unavailable.');
-                    }
-                  }}
-                >
-                  Reset demo data
-                </button>
-                <button className="button" onClick={() => setResetting(false)}>
-                  Keep my data
-                </button>
-              </>
-            ) : (
-              <button className="button" onClick={() => setResetting(true)}>
-                <RotateCcw size={14} />
-                Reset demo
-              </button>
-            )}
-          </div>
         </Modal>
       )}
       {toast && (
@@ -669,50 +730,6 @@ function PageHeading({
       <div className="eyebrow">{eyebrow}</div>
       <h1>{title}</h1>
       <p>{description}</p>
-    </div>
-  );
-}
-
-function Positions({
-  state,
-  actor,
-  target,
-}: {
-  state: import('./model').Economy;
-  actor: ActorId;
-  target: AgentId | 'syndicate';
-}) {
-  const positions = state.contributions.filter((c) => c.actor === actor && c.target === target);
-  const total = positions.reduce((sum, c) => sum + c.amount, 0);
-  const bonus = positions.reduce((sum, c) => sum + Math.round((c.amount * c.bonus) / 100), 0);
-  const pool =
-    target === 'syndicate' ? state.syndicates[0].pool : state.agents.find((a) => a.id === target)!.pool;
-  return (
-    <div className="position-panel">
-      <div>
-        <span>Contributed as {actorName(state, actor)}</span>
-        <strong>
-          {money(total)} <small>USDC</small>
-        </strong>
-      </div>
-      <div>
-        <span>Current capital share</span>
-        <strong>{pool ? ((total / pool) * 100).toFixed(2) : '0.00'}%</strong>
-      </div>
-      <div>
-        <span>Illustrative return + bonus</span>
-        <strong>
-          {money(total + bonus)} <small>USDC</small>
-        </strong>
-      </div>
-      <p>
-        {positions.length
-          ? positions.length +
-            (positions.length === 1 ? ' contribution recorded. ' : ' contributions recorded. ')
-          : 'Your first contribution starts your position. '}
-        Share is a demo ratio of your contributions to the current pool; no ownership token is
-        issued. Bonus is a projection, not an accrued or claimable balance.
-      </p>
     </div>
   );
 }

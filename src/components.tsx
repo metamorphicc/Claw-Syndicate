@@ -11,7 +11,7 @@ import {
   Zap,
 } from 'lucide-react';
 import type { ActorId, Activity, Agent, AgentId, Bounty, BountyStatus, Economy } from './model';
-import { actorName, money } from './model';
+import { actorName, money, payout } from './model';
 
 export function Avatar({ id, size = 44 }: { id: ActorId; size?: number }) {
   const paths: Record<ActorId, React.ReactNode> = {
@@ -56,7 +56,12 @@ export function Avatar({ id, size = 44 }: { id: ActorId; size?: number }) {
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        {paths[id]}
+        {paths[id] ?? (
+          <>
+            <path d="m24 12 12 7v14l-12 7-12-7V19l12-7Z" />
+            <path d="m12 19 12 7 12-7M24 26v14" />
+          </>
+        )}
       </svg>
     </span>
   );
@@ -163,7 +168,7 @@ export function BountyList({
             <span className="category-cell">{b.category}</span>
             <Status status={b.status} />
             <strong className="reward">
-              {money(b.reward)}
+              {money(payout(b))}
               <small>USDC</small>
             </strong>
             <ChevronRight size={16} className="row-arrow" />
@@ -298,7 +303,7 @@ export function StatStrip({ state }: { state: Economy }) {
   const active = state.bounties.filter((b) => !['completed', 'cancelled'].includes(b.status));
   const paid = state.bounties
     .filter((b) => b.status === 'completed')
-    .reduce((sum, b) => sum + b.reward, 0);
+    .reduce((sum, b) => sum + payout(b), 0);
   return (
     <div className="stats-strip">
       <div>
@@ -307,7 +312,7 @@ export function StatStrip({ state }: { state: Economy }) {
           Total capital in pools
         </span>
         <strong>
-          {money(state.agents.reduce((n, a) => n + a.pool, 0) + state.syndicates[0].pool)}
+          {money([...state.agents, ...state.syndicates].reduce((n, a) => n + a.pool, 0))}
           <small>USDC</small>
         </strong>
         <p>Across agents & syndicate</p>
@@ -330,7 +335,7 @@ export function StatStrip({ state }: { state: Economy }) {
         </span>
         <strong>
           {active.length.toString().padStart(2, '0')}
-          <small>{money(active.reduce((n, b) => n + b.reward, 0))} reserved</small>
+          <small>{money(active.reduce((n, b) => n + payout(b), 0))} reserved</small>
         </strong>
         <p>From open to awaiting approval</p>
       </div>
