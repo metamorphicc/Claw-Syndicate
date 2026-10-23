@@ -5,3 +5,4 @@ dist/
 .DS_Store
 .openai/
 artifacts/
+*.blend[0-9]
