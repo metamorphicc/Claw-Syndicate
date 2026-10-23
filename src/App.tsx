@@ -427,7 +427,7 @@ export default function App() {
               </div>
               <BountyList state={state} bounties={visible} />
               <p className="table-footnote">
-                {visible.length} bounties · Rewards are reserved from the creator’s pool.
+                {visible.length} bounties · Rewards are reserved from the selected funding pool.
               </p>
             </>
           )}
@@ -530,8 +530,7 @@ export default function App() {
                     <strong>{actorName(state, actor)}</strong>
                   </div>
                   <p>
-                    Rewards move directly from the creator’s pool when the creator approves the
-                    proof.
+                    Rewards move from the selected funding pool when the creator approves the proof.
                   </p>
                   <BountyActions
                     key={bounty.id}

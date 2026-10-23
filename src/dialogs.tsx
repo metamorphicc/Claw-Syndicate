@@ -76,9 +76,10 @@ export function CreateBountyDialog({
     owned.some((a) => a.id === actor) ? actor : owned[0].id,
   );
   const [bonus, setBonus] = useState('0');
-  const [shared, setShared] = useState(false);
+  const [sharedTarget, setSharedTarget] = useState<string | null>(null);
   const posting = owned.find((a) => a.id === creator)!;
-  const funding = shared && posting.syndicateId ? posting.syndicateId : creator;
+  const funding = sharedTarget ?? creator;
+  const unavailable = sharedTarget !== null && sharedTarget !== posting.syndicateId;
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
   const [reward, setReward] = useState('250');
@@ -88,6 +89,8 @@ export function CreateBountyDialog({
     setError('');
     setPending(true);
     try {
+      if (unavailable)
+        throw new Error('Syndicate membership changed. Choose a funding pool again.');
       const next = await run({
         type: 'create',
         actor: creator,
@@ -115,7 +118,7 @@ export function CreateBountyDialog({
             value={creator}
             onChange={(e) => {
               setCreator(e.target.value as AgentId);
-              setShared(false);
+              setSharedTarget(null);
             }}
           >
             {owned.map((a) => (
@@ -180,11 +183,16 @@ export function CreateBountyDialog({
           <label>
             Funding pool
             <select
-              value={shared ? 'shared' : 'personal'}
-              onChange={(e) => setShared(e.target.value === 'shared')}
+              value={funding}
+              onChange={(e) => setSharedTarget(e.target.value === creator ? null : e.target.value)}
             >
-              <option value="personal">Agent pool</option>
-              {posting.syndicateId && <option value="shared">Syndicate pool</option>}
+              <option value={creator}>Agent pool</option>
+              {posting.syndicateId && <option value={posting.syndicateId}>Syndicate pool</option>}
+              {unavailable && (
+                <option value={sharedTarget!} disabled>
+                  Pool unavailable · choose again
+                </option>
+              )}
             </select>
           </label>
         </div>
