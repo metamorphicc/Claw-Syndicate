@@ -199,6 +199,25 @@ footer > span { display: flex; align-items: center; gap: 5px; }footer img { widt
 .icon-button { min-width: 40px; min-height: 40px; border: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; color: var(--color-muted); }.modal-close { position: absolute; top: 10px; right: 10px; }
 .guide-steps { padding-left: 20px; margin: 22px 0; color: var(--color-ink); font-size: 12px; }.guide-steps li { padding: 5px 0 5px 5px; }
 .accent { color: var(--color-accent); }.muted { color: var(--color-muted); }
+.native-modal { color: var(--color-ink); margin: auto; max-height: 90dvh; }
+.native-modal::backdrop { background: var(--color-overlay); }
+.native-modal h2 { padding-right: 18px; }
+.form { display: flex; flex-direction: column; gap: 17px; margin-top: 23px; }
+.form label { display: flex; flex-direction: column; gap: 7px; font-size: 11px; color: var(--color-muted); }
+.form input, .form select, .form textarea { min-height: 44px; font-size: 12px; }
+.form select { padding: 11px; width: 100%; }
+.form-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 15px; }
+.full-width { width: 100%; }
+.form-hint { font-size: 10px; color: var(--color-muted); line-height: 1.8; }
+.form-error, .storage-error { background: var(--color-accent-soft); border: 1px solid var(--color-danger); padding: 12px; border-radius: 6px; color: var(--color-danger); font-size: 11px; line-height: 1.6; }
+.storage-error { margin-bottom: 24px; }
+.bounty-actions { margin-top: 23px; display: flex; flex-direction: column; gap: 12px; }
+.bounty-actions .form { margin-top: 0; }
+.settlement-success { color: var(--color-green); background: var(--color-green-soft); padding: 22px 15px; text-align: center; border-radius: 8px; }
+.settlement-success > svg { margin-bottom: 8px; }.settlement-success strong { display: block; font-size: 12px; font-weight: 500; }.settlement-success p { color: var(--color-muted); font-size: 11px; margin-top: 8px; }.settlement-success small { display: block; margin-top: 9px; color: var(--color-faint); font-size: 9px; }
+.toast { position: fixed; bottom: 24px; left: calc(50% + 95px); transform: translateX(-50%); padding: 13px 13px 13px 18px; border: 1px solid var(--color-line); border-radius: 9px; background: var(--color-raised); color: var(--color-ink); box-shadow: 0 8px 30px var(--color-shadow); z-index: 70; display: flex; align-items: center; gap: 11px; width: max-content; max-width: min(520px,90vw); font-size: 12px; }.toast > svg { color: var(--color-green); }.toast .icon-button { min-width: 32px; min-height: 30px; }
+.guide-reset { border-top: 1px solid var(--color-line); padding-top: 20px; margin-top: 22px; }.guide-reset p { font-size: 10px; color: var(--color-muted); margin-bottom: 12px; }.guide-reset .button { margin-right: 8px; }
+@media (max-width:760px) { .toast { left: 50%; } }
 .empty { min-height: 160px; padding: 40px 20px; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; text-align: center; color: var(--color-muted); }.empty p { font-size: 12px; }
 @media (hover:hover) { .nav-item:hover { background: var(--color-raised); color: var(--color-ink); }.agent-card:hover { background: var(--color-raised); border-color: var(--color-faint); }.bounty-row:hover { background: var(--color-surface); }.text-link:hover, .activity-item a:hover, .back-link:hover { color: var(--color-accent); }.button:hover { filter: brightness(1.1); }.icon-button:hover { background: var(--color-raised); }.tabs button:hover { background: var(--color-raised); } }
 @media (min-width:1600px) { .main-content { padding-top: 42px; }.intro-banner { min-height: 300px; }.intro-copy { padding: 33px 36px; }.intro-copy h2 { font-size: 36px; }.intro-copy p { font-size: 13px; }.intro-copy .button { margin-top: 23px; }.network-art { min-height: 300px; max-width: 540px; }.agent-card { padding: 23px 23px 0; }.card-pool { margin: 23px 0 20px; }.lower-grid { grid-template-columns: minmax(0,1fr) 310px; }.bounty-row { min-height: 91px; }.bounty-cell h3 { font-size: 12px; } }
