@@ -2095,21 +2095,6 @@ h3 {
   opacity: 0;
   pointer-events: none;
 }
-.model-motion-button {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--color-line);
-  border-radius: 50%;
-  color: var(--color-muted);
-  background: var(--color-clear-surface);
-  opacity: 0.7;
-}
 .model-caption {
   display: flex;
   justify-content: space-between;
@@ -2119,12 +2104,6 @@ h3 {
   letter-spacing: 0.07em;
   color: var(--color-faint);
   padding: 8px 24px 0;
-}
-@media (hover: hover) {
-  .model-motion-button:hover {
-    opacity: 1;
-    color: var(--color-ink);
-  }
 }
 @media (max-width: 900px) {
   .claw-model {

@@ -76,7 +76,7 @@ The original **Claw Core** sculpture is authored in Blender 5.2. It replaces the
 
 The editable source is [assets/claw-core.blend](assets/claw-core.blend). [tools/create_claw_core.py](tools/create_claw_core.py) regenerates the scene, `public/models/claw-core.glb`, and its transparent poster. See [assets/README.md](assets/README.md) for the command.
 
-Three.js loads in a separate chunk when the hero mounts. The model is approximately 816 KiB, with no remote HDR, texture, or decoder requests. The control pauses and resumes the Blender animation; pointer movement adds a small view tilt. Rendering stops when offscreen or in a hidden tab, and reduced-motion preferences disable autoplay. Devices without WebGL display the Blender-rendered poster.
+Three.js loads in a separate chunk when the hero mounts. The model is approximately 816 KiB, with no remote HDR, texture, or decoder requests. The animation runs without visible playback controls; pointer movement adds a small view tilt. Rendering stops when offscreen or in a hidden tab, and reduced-motion preferences disable autoplay. Devices without WebGL display the Blender-rendered poster.
 
 ## Demo limitations
 

@@ -1,26 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pause, Play } from 'lucide-react';
 import type { ClawScene } from './claw-scene';
 
 export default function ClawModel() {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<ClawScene | null>(null);
-  const [paused, setPaused] = useState(
-    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  );
-  const initiallyPaused = useRef(paused);
-  initiallyPaused.current = paused;
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     let cancelled = false;
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncMotion = () => scene.current?.setPaused(preference.matches);
+    preference.addEventListener('change', syncMotion);
     import('./claw-scene')
       .then((module) => {
         if (cancelled || !host.current) return;
         try {
           scene.current = module.createClawScene(
             host.current,
-            initiallyPaused.current,
+            preference.matches,
             () => {
               if (!cancelled) setReady(true);
             },
@@ -40,20 +37,10 @@ export default function ClawModel() {
       });
     return () => {
       cancelled = true;
+      preference.removeEventListener('change', syncMotion);
       scene.current?.dispose();
       scene.current = null;
     };
-  }, []);
-  useEffect(() => {
-    scene.current?.setPaused(paused);
-  }, [paused]);
-  useEffect(() => {
-    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const changed = () => {
-      if (preference.matches) setPaused(true);
-    };
-    preference.addEventListener('change', changed);
-    return () => preference.removeEventListener('change', changed);
   }, []);
   return (
     <figure
@@ -75,16 +62,6 @@ export default function ClawModel() {
           aria-hidden="true"
           data-render-state={failed ? 'fallback' : ready ? 'ready' : 'loading'}
         />
-        {ready && !failed && (
-          <button
-            className="model-motion-button"
-            aria-label={paused ? 'Play 3D animation' : 'Pause 3D animation'}
-            aria-pressed={paused}
-            onClick={() => setPaused((value) => !value)}
-          >
-            {paused ? <Play size={13} /> : <Pause size={13} />}
-          </button>
-        )}
       </div>
       <figcaption className="model-caption">
         <span>THREE INDEPENDENT MINDS.</span>
