@@ -274,7 +274,10 @@ export function AgentRoster({ state, agents }: { state: Economy; agents: Agent[]
             <Avatar id={a.id} size={40} />
             <div>
               <h3>{a.name}</h3>
-              <span>Independent agent</span>
+              <span className="roster-desktop-meta">Independent agent</span>
+              <span className="roster-mobile-meta">
+                {a.category} · {a.token}
+              </span>
             </div>
           </div>
           <span className="roster-role">{a.role}</span>

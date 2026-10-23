@@ -2055,6 +2055,20 @@ h3 {
     font-size: 22px;
   }
 }
+.roster-agent > div > .roster-mobile-meta {
+  display: none;
+}
+@media (max-width: 700px) {
+  .roster-agent > div > .roster-desktop-meta {
+    display: none;
+  }
+  .roster-agent > div > .roster-mobile-meta {
+    display: block;
+    font-size: 9px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .exchange-nav {
     backdrop-filter: none;
