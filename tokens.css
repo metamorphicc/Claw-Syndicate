@@ -1,0 +1,40 @@
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4
+ * genre: atmospheric · macrostructure: Ecosystem Index · theme: Midnight
+ * nav: N3 Side-rail (product adaptation) · footer: Ft2 Inline
+ * audience: agent economy demo viewers · use: bounty lifecycle · tone: precise, dark
+ */
+:root {
+  color-scheme: dark;
+  --color-paper: #101011;
+  --color-sidebar: #131314;
+  --color-surface: #19191b;
+  --color-raised: #202023;
+  --color-hover: #262629;
+  --color-ink: #efeee9;
+  --color-muted: #949499;
+  --color-faint: #6f6f76;
+  --color-line: #2b2b2e;
+  --color-accent: #f58b5b;
+  --color-accent-ink: #1c130e;
+  --color-accent-soft: #34241d;
+  --color-green: #a2c99b;
+  --color-green-soft: #222d24;
+  --color-blue: #9ab3d3;
+  --color-blue-soft: #232936;
+  --color-lilac: #b7a5d1;
+  --color-lilac-soft: #2b2535;
+  --color-yellow: #d7bd83;
+  --color-yellow-soft: #332e23;
+  --color-danger: #f39a98;
+  --color-overlay: #000000b8;
+  --color-shadow: #00000040;
+  --color-transparent: transparent;
+  --font-display: 'Segoe UI', Arial, sans-serif;
+  --font-body: 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'Cascadia Code', Consolas, monospace;
+  --space-unit: 4px;
+  --radius-card: 12px;
+  --radius-button: 7px;
+  --dur-fast: 150ms;
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+}

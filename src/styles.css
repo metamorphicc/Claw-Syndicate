@@ -1,0 +1,5 @@
+@import '../tokens.css';
+* { box-sizing: border-box; }
+html, body { margin: 0; overflow-x: clip; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); }
+.boot { margin: 12vh 10vw; }
