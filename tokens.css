@@ -12,7 +12,7 @@
   --color-hover: #262629;
   --color-ink: #efeee9;
   --color-muted: #949499;
-  --color-faint: #6f6f76;
+  --color-faint: #898990;
   --color-line: #2b2b2e;
   --color-accent: #f58b5b;
   --color-accent-ink: #1c130e;
@@ -29,12 +29,12 @@
   --color-overlay: #000000b8;
   --color-shadow: #00000040;
   --color-transparent: transparent;
-  --font-display: 'Segoe UI', Arial, sans-serif;
-  --font-body: 'Segoe UI', Arial, sans-serif;
-  --font-mono: 'Cascadia Code', Consolas, monospace;
+  --font-display: 'Manrope Variable', 'Segoe UI', sans-serif;
+  --font-body: 'Manrope Variable', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
   --space-unit: 4px;
   --radius-card: 12px;
   --radius-button: 7px;
   --dur-fast: 150ms;
-  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
