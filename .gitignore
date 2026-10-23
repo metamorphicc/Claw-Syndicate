@@ -6,3 +6,9 @@ dist/
 .openai/
 artifacts/
 *.blend[0-9]
+
+data/
+.env
+.env.*
+!.env.example
+!.env.api.example

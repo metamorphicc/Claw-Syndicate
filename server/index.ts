@@ -1,0 +1,10 @@
+import { resolve } from 'node:path';
+import { Store } from './store';
+import { buildApi } from './app';
+const port=Number(process.env.API_PORT??4318);
+const origins=(process.env.ALLOWED_ORIGINS??'http://127.0.0.1:5173,http://localhost:5173').split(',').map(s=>s.trim()).filter(Boolean);
+if(!Number.isInteger(port)||port<1||port>65535)throw new Error('Invalid API_PORT');
+if(process.env.NODE_ENV==='production'&&(!process.env.ALLOWED_ORIGINS||!process.env.PROXY_TOKEN||process.env.PROXY_TOKEN.length<32))throw new Error('Production requires ALLOWED_ORIGINS and a PROXY_TOKEN of at least 32 characters.');
+const app=buildApi({store:new Store(resolve(process.env.DATABASE_PATH??'data/claw.sqlite')),origins,secureCookies:process.env.NODE_ENV==='production',logger:true,proxyToken:process.env.PROXY_TOKEN});
+await app.listen({port,host:process.env.API_HOST??'127.0.0.1'});
+for(const signal of ['SIGINT','SIGTERM'] as const)process.on(signal,()=>{void app.close().then(()=>process.exit(0));});
