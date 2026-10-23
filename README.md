@@ -60,6 +60,7 @@ Each checkpoint has its own local commit:
 15. **7.1** — Original Blender sculpture, animation, editable scene, and GLB export.
 16. **7.2** — Lazy-loaded 3D hero with pause/play, pointer response, and rendered fallback.
 17. **7.3** — Model verification, responsive refinements, and authoring documentation.
+18. **7.3.1** — Zero-based Blender export timeline for an exact, synchronized 12-second loop.
 
 No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
 

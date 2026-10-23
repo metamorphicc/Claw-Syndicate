@@ -15,8 +15,8 @@ os.makedirs(WEB, exist_ok=True)
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.object.delete(use_global=False)
 scene = bpy.context.scene
-scene.frame_start = 1
-scene.frame_end = 289
+scene.frame_start = 0
+scene.frame_end = 288
 scene.render.fps = 24
 
 
@@ -163,8 +163,8 @@ for i in range(3):
     finish(node, signal, gyro, 0)
 
 # One seamless twelve-second loop across synchronized glTF object tracks.
-for frame in range(1, 290, 6):
-    t = (frame - 1) / 288
+for frame in range(0, 289, 6):
+    t = frame / 288
     phase = math.tau * t
     root.rotation_euler = (.06 * math.sin(phase), .04 * math.cos(phase), phase)
     root.location.z = .085 * math.sin(phase * 2)
@@ -180,7 +180,7 @@ for frame in range(1, 290, 6):
     core.keyframe_insert(data_path="rotation_euler", frame=frame)
     core.keyframe_insert(data_path="scale", frame=frame)
 
-scene.frame_set(1)
+scene.frame_set(0)
 # Studio lighting and camera are retained in the editable Blender source, not the GLB.
 world = bpy.data.worlds.new("Dark studio")
 scene.world = world
