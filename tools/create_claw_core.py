@@ -162,7 +162,7 @@ for i in range(3):
     node.location = (.79 * math.cos(a), .79 * math.sin(a), 0)
     finish(node, signal, gyro, 0)
 
-# One seamless twelve-second loop, baked to a single GLB scene animation.
+# One seamless twelve-second loop across synchronized glTF object tracks.
 for frame in range(1, 290, 6):
     t = (frame - 1) / 288
     phase = math.tau * t

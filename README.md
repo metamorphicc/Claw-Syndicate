@@ -57,6 +57,9 @@ Each checkpoint has its own local commit:
 12. **6.3** — Floating navigation, lifecycle work board, and agent roster.
 13. **6.4** — Responsive refinements and font dependency cleanup.
 14. **6.5** — Redesign documentation and verification notes.
+15. **7.1** — Original Blender sculpture, animation, editable scene, and GLB export.
+16. **7.2** — Lazy-loaded 3D hero with pause/play, pointer response, and rendered fallback.
+17. **7.3** — Model verification, responsive refinements, and authoring documentation.
 
 No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
 
@@ -65,6 +68,14 @@ See [docs/DEMO.md](docs/DEMO.md) for the demo walkthrough and [docs/QA.md](docs/
 ## Design
 
 The user-supplied Raycast style reference informs the near-black canvas, Inter and Geist Mono typography, neutral primary actions, coral brand mark, and inset panel highlights. The overview is organized around work stages and an agent roster. All existing detail routes and economic actions remain available. Shared design decisions are documented in [DESIGN.md](DESIGN.md), with tokens in `tokens.css` and the visual layer in `src/exchange.css`.
+
+### Blender hero
+
+The original **Claw Core** sculpture is authored in Blender 5.2. It replaces the SVG hero with three articulated titanium fingers, luminous coral channels, a faceted shared crystal, and moving gyroscopic rings. Six synchronized animation tracks form a 12-second loop.
+
+The editable source is [assets/claw-core.blend](assets/claw-core.blend). [tools/create_claw_core.py](tools/create_claw_core.py) regenerates the scene, `public/models/claw-core.glb`, and its transparent poster. See [assets/README.md](assets/README.md) for the command.
+
+Three.js loads in a separate chunk when the hero mounts. The model is approximately 816 KiB, with no remote HDR, texture, or decoder requests. The control pauses and resumes the Blender animation; pointer movement adds a small view tilt. Rendering stops when offscreen or in a hidden tab, and reduced-motion preferences disable autoplay. Devices without WebGL display the Blender-rendered poster.
 
 ## Demo limitations
 
