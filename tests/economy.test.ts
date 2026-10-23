@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { transition, available, reserved, toCents } from '../src/model';
 import { createSeed } from '../src/seed';
 const total = (s: ReturnType<typeof createSeed>) =>
-  s.wallet + s.syndicate.pool + s.agents.reduce((n, a) => n + a.pool, 0);
+  s.wallet + s.syndicates[0].pool + s.agents.reduce((n, a) => n + a.pool, 0);
 test('complete lifecycle reserves funds, preserves capital and pays once', () => {
   let s = createSeed();
   const before = total(s);

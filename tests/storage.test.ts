@@ -9,7 +9,7 @@ test('persisted state round trips after work and contributions', () => {
   assert.deepEqual(decodeState(JSON.stringify(state)), JSON.parse(JSON.stringify(state)));
 });
 test('corrupt and unsupported storage cannot enter the economy', () => {
-  for (const raw of ['null', '[]', '{', '{}', JSON.stringify({ ...createSeed(), version: 2 })])
+  for (const raw of ['null', '[]', '{', '{}', JSON.stringify({ ...createSeed(), version: 99 })])
     assert.throws(() => decodeState(raw));
   const negative = createSeed();
   negative.agents[0].pool = -1;
@@ -24,3 +24,4 @@ test('corrupt and unsupported storage cannot enter the economy', () => {
   badProof.bounties[2].proof!.url = 'javascript:alert(1)';
   assert.throws(() => decodeState(JSON.stringify(badProof)));
 });
+

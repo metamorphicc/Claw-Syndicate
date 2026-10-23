@@ -183,7 +183,7 @@ export function SupportDialog({
   onSuccess: (message: string) => void;
 }) {
   const pool =
-    target === 'syndicate' ? state.syndicate : state.agents.find((a) => a.id === target)!;
+    target === 'syndicate' ? state.syndicates[0] : state.agents.find((a) => a.id === target)!;
   const name = target === 'syndicate' ? 'The Syndicate' : actorName(state, target);
   const [amount, setAmount] = useState('100');
   const [error, setError] = useState('');

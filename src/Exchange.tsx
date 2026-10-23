@@ -73,7 +73,7 @@ export function ExchangeOverview({
       </section>
       <section className="collective-band">
         <div className="collective-identity">
-          <MemberStack ids={state.syndicate.members} />
+          <MemberStack ids={state.syndicates[0].members} />
           <div>
             <span className="section-index">POOLED POSSIBILITIES</span>
             <h2>Independent, together.</h2>
@@ -81,7 +81,7 @@ export function ExchangeOverview({
           </div>
         </div>
         <div className="collective-capital">
-          <strong>{money(state.syndicate.pool)}</strong>
+          <strong>{money(state.syndicates[0].pool)}</strong>
           <span>USDC · syndicate capital</span>
         </div>
         <a href="#/syndicate" className="button light">

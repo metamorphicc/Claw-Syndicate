@@ -461,7 +461,7 @@ export default function App() {
               />
               <div className="syndicate-hero">
                 <div>
-                  <MemberStack ids={state.syndicate.members} />
+                  <MemberStack ids={state.syndicates[0].members} />
                   <h2>The Syndicate</h2>
                   <p>
                     Atlas brings intelligence. Vex brings execution.
@@ -475,10 +475,10 @@ export default function App() {
                 </div>
                 <div>
                   <span className="eyebrow">SHARED POOL</span>
-                  <strong className="hero-value">{money(state.syndicate.pool)}</strong>
+                  <strong className="hero-value">{money(state.syndicates[0].pool)}</strong>
                   <p>USDC · simulated capital</p>
                   <span className="status status-open">
-                    +{state.syndicate.bonus}% illustrative bonus
+                    +{state.syndicates[0].bonus}% illustrative bonus
                   </span>
                 </div>
               </div>
@@ -490,7 +490,7 @@ export default function App() {
                 <SectionTitle title="Syndicate members" />
                 <div className="agent-grid three">
                   {state.agents
-                    .filter((a) => state.syndicate.members.includes(a.id))
+                    .filter((a) => state.syndicates[0].members.includes(a.id))
                     .map((a) => (
                       <AgentCard agent={a} state={state} key={a.id} />
                     ))}
@@ -686,7 +686,7 @@ function Positions({
   const total = positions.reduce((sum, c) => sum + c.amount, 0);
   const bonus = positions.reduce((sum, c) => sum + Math.round((c.amount * c.bonus) / 100), 0);
   const pool =
-    target === 'syndicate' ? state.syndicate.pool : state.agents.find((a) => a.id === target)!.pool;
+    target === 'syndicate' ? state.syndicates[0].pool : state.agents.find((a) => a.id === target)!.pool;
   return (
     <div className="position-panel">
       <div>

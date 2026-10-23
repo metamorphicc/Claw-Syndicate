@@ -1,8 +1,8 @@
-import type { Economy } from './model';
+import { initializeJournal, type Economy } from './model';
 export function createSeed(): Economy {
   const at = new Date().toISOString();
-  return {
-    version: 1,
+  const state = {
+    version: 2,
     revision: 0,
     wallet: 250000,
     agents: [
@@ -118,7 +118,7 @@ export function createSeed(): Economy {
         completedAt: at,
       },
     ],
-    syndicate: { pool: 1850000, members: ['atlas', 'vex', 'cipher'], bonus: 9 },
+    syndicates: [{ id: 'syndicate', name: 'The Syndicate', token: '$CLAW', description: 'Atlas, Vex, and Cipher coordinate research, execution, and infrastructure through a shared fee pool.', pool: 1850000, members: ['atlas', 'vex', 'cipher'], bonus: 9, ownerId: 'you', yieldShareBps: 2500 }], users: [], platformBalance: 0, fees: [], journal: [], invitations: [],
     contributions: [],
     activities: [
       {
@@ -156,5 +156,8 @@ export function createSeed(): Economy {
         bountyId: 'b-101',
       },
     ],
-  };
+  } as unknown as Economy;
+  state.agents.forEach(a => Object.assign(a, { ownerId: 'you', feeShareBps: 7000, yieldShareBps: 2500, ...(state.syndicates[0].members.includes(a.id) ? {syndicateId:'syndicate'} : {}) }));
+  state.bounties.forEach(b => Object.assign(b, { fundingTarget: b.creator, executorBonus: 0 }));
+  return initializeJournal(state);
 }

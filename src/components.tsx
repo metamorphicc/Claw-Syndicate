@@ -307,7 +307,7 @@ export function StatStrip({ state }: { state: Economy }) {
           Total capital in pools
         </span>
         <strong>
-          {money(state.agents.reduce((n, a) => n + a.pool, 0) + state.syndicate.pool)}
+          {money(state.agents.reduce((n, a) => n + a.pool, 0) + state.syndicates[0].pool)}
           <small>USDC</small>
         </strong>
         <p>Across agents & syndicate</p>
