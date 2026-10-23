@@ -1,24 +1,18 @@
-# Демо за 3–5 минут
+# Demo walkthrough
 
-## Основной сценарий
+Start npm run dev:api and npm run dev. Register a test account using Sign in, then choose your account or an owned agent in the identity selector. All balances are simulations shared through the API.
 
-1. Открой обзор. Покажи четырёх агентов, их роли, пулы и условные токены.
-2. Нажми **Create bounty**. Выбери **Atlas**; название — `Research the AI agent economy`, описание — `Compare three AI agent protocols. Deliver a report with sources, token economics, and a ranked shortlist.`, награда — `175` USDC.
-3. После создания откроется задание. Деньги пока не выплачены; они зарезервированы в пуле Atlas.
-4. В верхнем селекторе **Acting as** выбери **Echo** или **You · demo user**. Нажми **Claim as …**.
-5. Введи proof минимум из 20 символов и ссылку с `https://`. Например: `Completed the comparison of three protocols, with source links and a prioritized recommendation.` и `https://example.com/research-demo`. В примере это демонстрационная ссылка; для показа можно вставить ссылку на собственный документ.
-6. Нажми **Submit proof**. Статус станет **In review**.
-7. Нажми **Switch to Atlas to review**. Покажи текст proof и ссылку на результат.
-8. Нажми **Approve & pay $175**. Задание завершится, пул Atlas уменьшится на 175 USDC, пул Echo или баланс пользователя увеличится на ту же сумму.
-9. Открой **Activity**: создание, взятие, proof и оплата видны как отдельные события. Перезагрузка страницы сохраняет результат.
+1. Open Agents and create Nova with token NOVA, a role, and a description. Keep the default 70% fee share, 10% backer cap, and 25% backer allocation.
+2. On Nova's profile, contribute $100 as your account. Balance becomes $100, protected capital $100, spendable $0.
+3. In Economy, record $1,000 gross fees for Nova. The pool receives $700 and the platform receives $300. The backer earns $10, reaching its cap. Pool balance is $800, protected capital $110, spendable $690.
+4. Return to Nova's profile and choose Return $110. Principal and earned bonus reach your account; the position is marked Returned.
+5. Create a bounty as Nova with $100 reward and $20 executor bonus. The reservation is $120. Switch to your account or another owned agent, claim it, and submit text proof with an HTTPS link.
+6. Switch to Nova, review proof, and approve payment of $120. The creator's pool loses $120, the executor receives $120, and the timeline/journal show completion.
+7. Create Pulse as a second agent. Open Syndicate and create a group with Nova and Pulse. Personal balances stay in place.
+8. Support the new shared pool and record more fees from Nova. Receipts and funded bonuses now target the syndicate. Post a bounty using Funding pool: Syndicate pool to pay for shared work.
+9. The syndicate owner can invite independent agents. Their owner accepts on the Syndicate page. Removing a member changes future fees; existing shared obligations remain.
+10. Account provides generation and revocation of worker keys. A key can act only as its selected agent. See API.md.
 
-## Дополнительные сценарии
+Reloading or another browser reads the same database. Views refresh every 15 seconds and on focus. An API outage produces a visible error. An uncertain response retains the command key; use Check pending command before continuing.
 
-- **Быстрая выплата:** начальное задание `Turn the agent economy report into a thread` уже ждёт проверки. Переключись на Atlas и подтверди либо запроси доработку.
-- **Доработка:** Atlas нажимает **Request changes**, Echo исправляет proof и повторно отправляет его.
-- **Резервирование:** создай несколько баунти из одного пула. Недоступную сумму нельзя потратить на новое задание или вклад.
-- **Поддержка:** выбери **You**, открой Atlas → **Support agent**. Вклад 100 USDC показывает условный возврат 108 USDC. Подтверждение уменьшает пользовательский баланс и пополняет пул Atlas.
-- **Синдикат:** открой **Syndicate → Contribute to pool**. Вклад 250 USDC в начальный пул 18 500 USDC даёт 1,33% текущего капитала и иллюстративный возврат 272,50 USDC с бонусом 9%.
-- **Повторный показ:** кнопка `?` в верхней панели → **Reset demo → Reset demo data** восстанавливает стартовые данные. Действие сохраняет предыдущий снимок в локальный backup-ключ.
-
-Все суммы — симуляция. Выплата по баунти меняет балансы сразу; бонусы по поддержке показывают только расчёт и не зачисляются на баланс.
+There is no public reset of shared state. Use database backups for repeatable presentations. Explicit seed ownership setup is described in HOSTING.md. Old browser-only localStorage data is neither imported nor erased.

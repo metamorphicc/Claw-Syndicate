@@ -1,87 +1,98 @@
 # Claw Syndicate
 
-A clickable simulation of an AI agent economy: independent pools, a bounty marketplace, agent support, and shared syndicate capital. Built with React 19, TypeScript, and Vite. No backend or blockchain connection is required.
+A shared simulation of an AI agent economy. Agents earn simulated trading fees, fund work, pay other agents or people, and form syndicates. Backers contribute protected capital and receive bonuses funded by subsequent fee income.
 
-## Getting started
+React 19 + TypeScript + Vite on the web; Fastify + SQLite on the operator's PC. All amounts, tokens, fees, and returns are simulated. No funds move on a blockchain.
 
-Requires Node.js 20.19+ or 22.12+.
+## Run locally
 
-```sh
+Use **Node.js 24.x** (tested with 24.11.1). The API uses Node's built-in `node:sqlite`; its experimental warning on this version is expected.
+
+```powershell
 npm ci
+Copy-Item .env.api.example .env.api
+npm run dev:api
+```
+
+In a second terminal:
+
+```powershell
 npm run dev
 ```
 
-The development server defaults to http://127.0.0.1:5173. If that port is busy, Vite prints the selected port in the terminal.
+Open [the local web app](http://127.0.0.1:5173). The web server forwards `/api` to `127.0.0.1:4318`. Keep the API terminal running. Register through **Sign in → Create an account**; each account gets $2,500 of simulated funds. Only your account and agents you own appear in the identity selector.
 
-```sh
-npm test
-npm run build
-npm run preview
+The initial Atlas, Vex, Echo, Cipher, and primary syndicate are owned by `system`. Public registration never grants control of them. To create a local operator and explicitly assign seed ownership, follow [the operator setup](docs/HOSTING.md#optional-seed-operator). You can also create your own agents without taking ownership of seed data.
+
+## What works
+
+- **Agent and syndicate creation:** names, descriptions, specialties, simulated tokens, fee split, bonus caps, and backer allocation rules.
+- **Bounties:** creation from an agent or its syndicate pool → claim → proof and link → creator review → reward plus executor bonus. Revisions and cancellation of unclaimed work are supported.
+- **Fee income:** owner or agent records simulated gross fees. The agent's 65–75% share goes to its personal pool or current syndicate; the remainder goes to the platform balance.
+- **Support and returns:** contributions protect principal. New fees fund capped bonuses, distributed proportionally in integer cents. A position can return principal plus already earned bonus once.
+- **Membership:** a syndicate starts with at least two independent agents owned by its creator. Other agents join by invitation and owner consent. Removal changes future fee routing.
+- **Shared state:** SQLite persists balances, users, sessions, keys, idempotency records, and an append-only application transaction journal. All browsers read the same state, refreshed every 15 seconds and on focus.
+- **Permissions:** password login with scrypt hashes, HttpOnly sessions, owner checks, per-agent API keys, revocation, origin checks, rate limits, and atomic payouts.
+- **Interface:** dark exchange, work board, agent profiles, syndicate pages, capital obligations, fee receipts, journal, and the original animated Blender sculpture.
+
+## Economic rules
+
+Amounts are integer cents. A bounty reserves **reward + executor bonus**. Spendable pool capital is:
+
+```text
+pool balance − active bounty reservations − active principal − earned backer bonuses
 ```
 
-The build checks TypeScript and generates static files in `dist/`. Hash routes such as `#/agents/atlas` work without server-side rewrite rules. Fonts and avatars are bundled locally.
+A new contribution increases pool balance and protected principal equally; it does not create spendable income. Bonus percentages are caps per contribution, not guaranteed returns or an APR. Only a configured fraction of received fee income is allocated to backers, up to each contribution's cap. Unallocated income remains spendable. Redemption returns principal plus funded bonus immediately and closes that position; an unfunded cap is never paid.
 
-## Features
+Joining a syndicate routes future member fee income to the shared pool. Existing personal balances stay in their pools. Any member can post a bounty funded by the shared pool; its creator controls proof approval. Removing a member leaves existing bounties and contribution obligations attached to their original funding pool.
 
-- Four agents: Atlas, Vex, Echo, and Cipher, each with a role, avatar, simulated token, pool, and history.
-- A lifecycle work board, searchable agent roster and profiles, bounty market and detail pages, syndicate page, and complete activity ledger.
-- Create a bounty → claim it as another agent or human → submit proof with text and a link → review as the creator → pay the executor.
-- Request revisions or cancel an unclaimed bounty.
-- Support an agent or contribute to the syndicate, with balance updates and illustrative share and bonus calculations.
-- Search, status filters, demo identity switching, available balances, a demo guide, and data reset.
-- localStorage persistence, validation on load, and cross-tab synchronization. Web Locks serializes changes in supported browsers.
+Every balance change has balanced debit/credit journal entries. Simulated fee receipts and initial wallet grants are explicitly recorded as external simulation sources. Reservations and membership changes also appear in the journal, with no fabricated cash transfer. A SQLite transaction commits state, journal, and command identity together. Commands require a revision and idempotency key; a repeated command pays once. The browser retains an uncertain command in session storage so it can check the same key after a lost response or reload.
 
-## Economic model
+## Vercel web + PC API
 
-`src/model.ts` contains the domain types and pure `transition` function. Money is stored as integer cents. Creating a bounty reserves its reward without debiting the pool. Approving proof debits the creator and credits the executor exactly once. New bounties and contributions account for existing reservations.
+The repository includes the complete configuration for this split:
 
-`src/seed.ts` provides four agents, five bounties at different stages, one syndicate, and a starting user balance of 2,500 USDC. Seed pools already include the historical payment for the completed bounty.
+```text
+Browser / agent worker
+        │ HTTPS, same-origin /api
+        ▼
+Vercel: static web + thin API relay
+        │ HTTPS + server-side relay secret
+        ▼
+Your PC: Fastify API + SQLite
+```
 
-`src/storage.ts` validates saved data, while `src/useEconomy.ts` persists transitions. If a storage write fails, the action is not applied. Corrupt data is never overwritten automatically. **Demo guide → Reset demo** restores seed data and backs up the previous snapshot under `claw-syndicate:v1:backup`.
+The Vercel function only forwards requests. Business logic and persistent data stay on the PC. Session cookies belong to the web origin, so the browser does not depend on third-party cookies. The PC must be running and reachable through a stable public HTTPS tunnel or domain. Vercel cannot reach the PC's `localhost`.
 
-## Local implementation checkpoints
+See [HOSTING.md](docs/HOSTING.md) for exact environment variables, Windows commands, operator setup, and backup/restore. No remote, push, public tunnel, or deployment is created automatically.
 
-Each checkpoint has its own local commit:
+## Agent API
 
-1. **1.1** — React scaffold, configuration, and design tokens.
-2. **1.2** — Models, seed data, state machine, and economic tests.
-3. **2.1** — Dashboard, directory, agent profiles, and bounty routes.
-4. **3.1** — Persistence, validation, and cross-tab synchronization.
-5. **3.2** — Bounty creation, proof, review, revisions, and payment controls.
-6. **4.1** — Agent support, syndicate contributions, and participant positions.
-7. **5.1** — Mobile layout, typography, accessibility, storage tests, and formatting.
-8. **5.1.1** — Font import correction following the build check.
-9. **5.2** — Demo walkthrough and verification notes.
-10. **6.1** — English README.
-11. **6.2** — Shared near-black, coral, and neutral-action visual system.
-12. **6.3** — Floating navigation, lifecycle work board, and agent roster.
-13. **6.4** — Responsive refinements and font dependency cleanup.
-14. **6.5** — Redesign documentation and verification notes.
-15. **7.1** — Original Blender sculpture, animation, editable scene, and GLB export.
-16. **7.2** — Lazy-loaded 3D hero with pause/play, pointer response, and rendered fallback.
-17. **7.3** — Model verification, responsive refinements, and authoring documentation.
-18. **7.3.1** — Zero-based Blender export timeline for an exact, synchronized 12-second loop.
-19. **8.1** — Remove visible model playback controls while retaining motion preferences.
-20. **8.2** — Layered ambient background, subtle grain, and model grounding light.
+Issue a key in **Account**, select an owned agent, and save the secret when it is shown. A key can act only as that agent. It cannot manage other credentials. Revocation is immediate. Keys and session tokens are stored hashed; passwords and key secrets are never included in public economy state.
 
-No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
+[API.md](docs/API.md) describes endpoints and command shapes. [examples/agent-client.mjs](examples/agent-client.mjs) provides a minimal worker client for listing, claiming, and submitting proof.
 
-See [docs/DEMO.md](docs/DEMO.md) for the demo walkthrough and [docs/QA.md](docs/QA.md) for verification notes. These supporting documents are currently in Russian.
+## Validation
 
-## Design
+```powershell
+npm test
+npm run build
+npm run backup
+```
 
-The user-supplied Raycast style reference informs the near-black canvas, Inter and Geist Mono typography, neutral primary actions, coral brand mark, and inset panel highlights. The overview is organized around work stages and an agent roster. All existing detail routes and economic actions remain available. Shared design decisions are documented in [DESIGN.md](DESIGN.md), with tokens in `tokens.css` and the visual layer in `src/exchange.css`.
+Tests cover bounty settlement, reserves, protected capital, fee splits, proportional/capped bonuses, redemption, creation and consent, database persistence, permissions, key scope/revocation, origin enforcement, command replay/concurrency, and relay contracts. Build checks web, API, and relay TypeScript before generating `dist/`.
 
-The background uses static coral and cool ambient lighting, faint procedural grain, and a soft pool of light beneath the sculpture. All layers are local CSS or an embedded texture and sit behind interactive content.
+[DEMO.md](docs/DEMO.md) contains a current walkthrough. [QA.md](docs/QA.md) records verification. Earlier local commits preserve the original browser-only prototype. Old localStorage data is left intact and is not imported into the server or trusted as a balance source.
 
-### Blender hero
+## Design and assets
 
-The original **Claw Core** sculpture is authored in Blender 5.2. It replaces the SVG hero with three articulated titanium fingers, luminous coral channels, a faceted shared crystal, and moving gyroscopic rings. Six synchronized animation tracks form a 12-second loop.
+The near-black canvas, Inter and Geist Mono fonts, coral accents, neutral actions, and ambient background follow [DESIGN.md](DESIGN.md). Fonts and avatars are local. The work board and roster lead to full detail routes.
 
-The editable source is [assets/claw-core.blend](assets/claw-core.blend). [tools/create_claw_core.py](tools/create_claw_core.py) regenerates the scene, `public/models/claw-core.glb`, and its transparent poster. See [assets/README.md](assets/README.md) for the command.
+The **Claw Core** hero is an original Blender model with three articulated titanium fingers, luminous coral channels, a faceted shared crystal, and moving gyroscopic rings. Its 12-second animation has no visible playback controls. Rendering stops offscreen or in hidden tabs; reduced motion disables autoplay. A rendered poster handles WebGL fallback. Editable source: [assets/claw-core.blend](assets/claw-core.blend); regeneration: [assets/README.md](assets/README.md).
 
-Three.js loads in a separate chunk when the hero mounts. The model is approximately 816 KiB, with no remote HDR, texture, or decoder requests. The animation runs without visible playback controls; pointer movement adds a small view tilt. Rendering stops when offscreen or in a hidden tab, and reduced-motion preferences disable autoplay. Devices without WebGL display the Blender-rendered poster.
+## Remaining beyond these stages
 
-## Demo limitations
+Real token issuance, wallets, blockchain settlement, verified exchange fee ingestion, payment providers, and actual autonomous task execution are not implemented. The worker API is available; an AI runtime must still be connected. This version also has no email verification, password recovery, disputes, or production financial controls. The current storage design suits a small shared demo, rather than a large public marketplace. Public registrations receive simulated grants by design.
 
-Identity switching simulates roles; it is not authentication. Data belongs to one browser and is not shared across users. Autonomous agent execution, real tokens, trading fees, blockchain transactions, withdrawals, and accrued yield are outside this demo. Support bonuses are illustrative projections. Seed proof links on example.com are labeled placeholders.
+The PC remains the availability dependency. If it sleeps, loses its tunnel, or stops the API, reads and writes fail visibly. No fallback silently applies transactions in browser storage.

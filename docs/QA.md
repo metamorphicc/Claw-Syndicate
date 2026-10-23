@@ -1,64 +1,44 @@
-# Проверка демо
+# Verification: shared economy stages
 
-Дата: 23 октября 2026.
+Date: 23 October 2026. Node 24.11.1, local Windows development environment.
 
-## Автоматические проверки
+## Automated checks
 
-`npm test`: 8 тестов прошли.
+`npm test`: **19 tests pass**. Coverage includes:
 
-- Полный цикл задания, резервирование награды, сохранение общей суммы и запрет повторной выплаты.
-- Выплаты агент → агент и ограничения действий создателя/исполнителя.
-- Отказ при перерасходе резервов, повторном взятии задания и отмене уже взятого задания.
-- Освобождение резерва при отмене; возврат на доработку и повторный proof.
-- Поддержка агента и синдиката перемещает существующий капитал и сохраняет выбранный бонус.
-- Некорректные суммы и опасные URL не принимаются.
-- Сериализация и загрузка состояния после выплат и вкладов.
-- Повреждённые данные, неизвестная версия, отрицательный пул, недостаточные резервы и дубликаты заданий не загружаются.
+- Complete bounty lifecycle, creator/executor permissions, revisions, cancellation, reservations, and single settlement.
+- Separate executor bonuses and syndicate-funded rewards.
+- Protected contribution principal, funded bonus caps, proportional allocation/cent rounding, redemption, and conservation through balanced journal entries.
+- Dynamic agent/syndicate creation, unique symbols, invitation consent, removal, and future fee routing.
+- State schema validation, corrupt/unsupported data, and balance/journal consistency.
+- SQLite persistence after reopening, explicit local seed ownership, authenticated identities, agent key scope/revocation, and disallowed origins.
+- Concurrent replay of the same approval, different-body key reuse, stale revisions, and duplicate payout rejection.
+- Vercel relay route restrictions, fixed upstream, cookie/header forwarding, body limits, configuration/outage responses, and production cookie security.
+- A relay response lost after the PC commits: retrying the same command returns replayed state and credits fees only once.
+- Consistent online database backup, restore, credential persistence, and overwrite refusal.
 
-`npm run build`: TypeScript и production-сборка Vite проходят.
+`npm run build`: web, API, and relay TypeScript pass; Vite production assets build successfully. The existing lazy Three.js chunk remains about 638 kB before gzip and produces the size advisory. Node emits its expected experimental SQLite warning on the tested version.
 
-## Проверено в браузере
+`npm run backup`: created a consistent timestamped backup under ignored `data/backups/` while the local API was running.
 
-- Создано задание от Atlas на 175 USDC.
-- Echo взял его, отправил текстовый proof и ссылку.
-- Atlas подтвердил; интерфейс показал завершение и выплату Echo. После перезагрузки результат и история сохранились.
-- После выплаты пул Atlas: 12 305 USDC, пул Echo: 4 535 USDC — изменения на −175/+175 относительно начального состояния.
-- Пользователь внёс 100 USDC в Atlas и 250 USDC в синдикат. Баланс стал 2 150 USDC, пул синдиката — 18 750 USDC, доля — 1,33%, условный возврат — 272,50 USDC. После перезагрузки цифры сохранились.
-- На ширинах 320, 375, 414, 768 и 1440 CSS px измерены обзор, страница Atlas, рынок, страница баунти и синдикат: 25 сочетаний, без выхода элементов основного контента за ширину viewport.
-- Диалоги используют нативный modal dialog с фокусом внутри, закрытием по Escape и возвратом фокуса. Для мобильного режима доступ к гайду и балансу сохранён в верхней панели.
-- После проверки тестовые операции убраны через **Reset demo**, начальные данные восстановлены; предыдущий снимок оставлен в локальном backup-ключе.
+## Browser verification
 
-## Ограничения проверки
+The existing in-app browser was used against the real local API through Vite's proxy.
 
-Демо работает в одном браузере. Реальная авторизация, работа автономных агентов, общая серверная база, trading fees, вывод средств и блокчейн не входят в эту реализацию. Между браузерами состояние не синхронизируется. В браузерах без Web Locks нет гарантии сериализации одновременных изменений из нескольких вкладок.
+- Registered a local QA account, received the $2,500 simulated grant, and verified the authenticated identity selector exposes only that account and its owned agents.
+- Created Nova with its own token and parameters. Its pool began at $0.
+- Contributed $100: pool $100, protected $100, spendable $0.
+- Recorded $1,000 gross fees: $700 to Nova, $300 platform fees, $10 funded backer bonus; pool $800, protected $110, spendable $690.
+- Returned $110: account $2,510, active position closed, Nova pool $690.
+- Created a $100 bounty with $20 executor bonus, claimed as the account, submitted proof, switched to Nova, and approved. UI showed Completed and $120 paid; account $2,630, Nova pool $570.
+- Created Pulse and the Northstar Collective syndicate with both agents. Personal balances stayed in place. The detail route, owner membership controls, and invite selector rendered correctly.
+- Contributed $100 to the new group and recorded another $1,000 from Nova. The receipt routed $700 to Northstar, credited $300 to platform fees, and funded $10 in group backer bonuses. Shared balance $800, protected $110, spendable $690; Nova's personal pool remained $570.
+- Checked the new pages in the existing narrow browser panel. Dialogs use native modal focus behavior; token, number, and text inputs accepted valid values.
 
-Удалённый репозиторий и деплой не настраивались.
+QA entities and balances are retained in the ignored local database as a useful demo scenario. No public reset was introduced. Test credentials are not committed; the owner should create their own account or local seed operator.
 
-## Проверка редизайна
+## Deployment boundary
 
-README переведён на английский. Внешний вид переработан по предоставленному Raycast-референсу: почти чёрный фон, Inter / Geist Mono, нейтральные светлые действия, коралловый бренд и панели с внутренней подсветкой. Главная теперь использует верхнюю навигацию, доску стадий баунти и реестр агентов.
+Vercel configuration and relay contracts are tested locally. No Vercel account, domain, public tunnel, or deployed environment was configured or tested. The operator must supply those endpoints and private variables, then perform the deployment smoke test in HOSTING.md. No remote was configured and no commit was pushed.
 
-- Восемь существующих тестов экономики и хранилища проходят.
-- Production-сборка проходит с новым набором локальных шрифтов.
-- Повторно проверены 25 сочетаний пяти страниц и ширин 320, 375, 414, 768 и 1440 px; проверка охватывает также верхнюю навигацию. Элементы не выходят за ширину viewport.
-- Фильтр Research уменьшает список открытых баунти до одного; All work восстанавливает исходную выборку.
-- Из доски открываются страницы заданий. Диалог создания доступен из верхней навигации; из review доступны переключение на создателя, Approve & pay и Request changes.
-- Сохранённые балансы и задания не сбрасывались при изменении дизайна. Модель переходов и формат хранилища не менялись.
-
-## Blender-модель в первом экране
-
-Старый SVG заменён на оригинальную модель Claw Core, созданную скриптом в установленном Blender 5.2.2 LTS. Сохранены редактируемая сцена `.blend`, GLB и прозрачный рендер для fallback.
-
-- Проверен заголовок glTF 2, три отдельных шарнира и шесть анимационных дорожек длительностью по 12 секунд. GLB: 835 488 байт, около 36 268 треугольников, без внешних буферов.
-- Все временные дорожки начинаются с 0 и заканчиваются ровно на 12 секундах: начало Blender-таймлайна перенесено на кадр 0, чтобы убрать лишнюю паузу в один кадр на стыке цикла.
-- Браузер загрузил WebGL-сцену и все шесть дорожек. Вращение, раскрытие клешней, движение колец и изменение положения модели видны при воспроизведении.
-- Кнопка Pause меняется на Play и выставляет `aria-pressed=true`; повторное нажатие возобновляет воспроизведение. Ошибок в консоли браузера при проверке не обнаружено.
-- WebGL-модель повторно проверена на ширинах 320, 375, 414, 768 и 1440 px: состояние ready, все шесть дорожек доступны, элементы не выходят за viewport.
-- В коде предусмотрены остановка рендера вне экрана/при скрытой вкладке, отключение autoplay при reduced motion, освобождение ресурсов при уходе со страницы и рендер-постер при недоступном WebGL. Reduced motion и потеря WebGL-контекста отдельно не эмулировались.
-- Production-сборка проходит. Three.js выделен в отдельный лениво загружаемый chunk; Vite сообщает о его размере свыше 500 КБ до gzip, основной интерфейс не ждёт его загрузки.
-
-## Фон и удаление кнопки модели
-
-По следующему запросу кнопка Pause/Play удалена из компонента и CSS. Анимация управляется только видимостью и системной настройкой reduced motion; изменение настройки отслеживается в обе стороны. Добавлены статические фоновые слои: коралловый свет у модели, холодный отсвет ниже по странице, встроенная монохромная текстура зерна и световое пятно под скульптурой. Слои находятся позади контента и не перехватывают клики.
-
-В браузере подтверждено: внутри модели нет кнопок, WebGL находится в состоянии ready, модальное окно создания баунти открывается поверх фона. На ширинах 320, 375, 414, 768 и 1440 px модель загружает шесть дорожек без переполнения. Production-сборка проходит.
+Real token issuance, trading integrations, wallets, payments, and autonomous AI execution remain outside these three stages. The implementation provides the shared simulation and agent API. Earlier browser-only QA is retained in Git history; its localStorage/reset assumptions do not apply to the current app.

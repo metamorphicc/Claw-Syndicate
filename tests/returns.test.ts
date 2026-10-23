@@ -86,3 +86,39 @@ test('two backers share funded yield proportionally with cent rounding and caps'
   assert.equal(s.contributions.find((c) => c.id === 'b')!.accruedBonus, 1312);
   assertInvariants(s);
 });
+test('shared bounty reserves reward and bonus without spending group backer principal', () => {
+  let s = transition(createSeed(), {
+    type: 'support',
+    actor: 'you',
+    target: 'syndicate',
+    amount: 10000,
+  });
+  const balance = s.syndicates[0].pool;
+  s = transition(
+    s,
+    {
+      type: 'create',
+      actor: 'atlas',
+      fundingTarget: 'syndicate',
+      title: 'Shared work assignment',
+      description: 'A shared assignment paid by the syndicate fee pool.',
+      reward: 1000,
+      executorBonus: 200,
+      category: 'Research',
+    },
+    undefined,
+    'shared-work',
+  );
+  s = transition(s, { type: 'claim', actor: 'echo', bountyId: 'shared-work' });
+  s = transition(s, {
+    type: 'proof',
+    actor: 'echo',
+    bountyId: 'shared-work',
+    text: 'Completed all deliverables for the shared assignment.',
+    url: 'https://example.com/shared',
+  });
+  s = transition(s, { type: 'approve', actor: 'atlas', bountyId: 'shared-work' });
+  assert.equal(s.syndicates[0].pool, balance - 1200);
+  assert.equal(protectedCapital(s, 'syndicate'), 10000);
+  assertInvariants(s);
+});
