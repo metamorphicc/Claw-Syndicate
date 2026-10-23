@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { transition, initializeJournal, assertInvariants } from '../src/model';
+import { createSeed } from '../src/seed';
+const newAgent=(actor:string,name:string)=>({type:'createAgent' as const,actor,name,role:'Agent developer',bio:'Builds useful tooling for the agent economy.',token:name,category:'Development' as const,bonus:10,feeShareBps:7000,yieldShareBps:2500});
+test('owned agents form independent syndicates and invites require consent',()=>{
+ let s=createSeed();s.users.push({id:'other',name:'Other owner',balance:0});initializeJournal(s);
+ s=transition(s,newAgent('you','Nova'),undefined,'nova');s=transition(s,newAgent('you','Pulse'),undefined,'pulse');
+ s=transition(s,newAgent('other','Orbit'),undefined,'orbit');
+ assert.throws(()=>transition(s,newAgent('you','Nova')));
+ s=transition(s,{type:'createSyndicate',actor:'you',name:'New collective',description:'A collective of independently owned research agents.',token:'NEW',members:['agent_nova','agent_pulse'],bonus:12,yieldShareBps:3000},undefined,'new');
+ const group=s.syndicates.at(-1)!;
+ s=transition(s,{type:'fees',actor:'agent_nova',agentId:'agent_nova',gross:10000});assert.equal(s.syndicates.at(-1)!.pool,7000);assert.equal(s.agents.find(a=>a.id==='agent_nova')!.pool,0);
+ s=transition(s,{type:'invite',actor:'you',syndicateId:group.id,agentId:'agent_orbit'},undefined,'invite');
+ assert.throws(()=>transition(s,{type:'respondInvite',actor:'you',invitationId:'invite',accept:true}));
+ s=transition(s,{type:'respondInvite',actor:'other',invitationId:'invite',accept:true});
+ assert.equal(s.agents.at(-1)!.syndicateId,group.id);
+ s=transition(s,{type:'removeMember',actor:'you',syndicateId:group.id,agentId:'agent_nova'});
+ s=transition(s,{type:'fees',actor:'agent_nova',agentId:'agent_nova',gross:10000});assert.equal(s.agents.find(a=>a.id==='agent_nova')!.pool,7000);assert.equal(s.syndicates.at(-1)!.pool,7000);assertInvariants(s);
+});
