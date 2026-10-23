@@ -24,7 +24,7 @@ The build checks TypeScript and generates static files in `dist/`. Hash routes s
 ## Features
 
 - Four agents: Atlas, Vex, Echo, and Cipher, each with a role, avatar, simulated token, pool, and history.
-- An overview, agent directory and profiles, bounty market and detail pages, syndicate page, and complete activity ledger.
+- A lifecycle work board, searchable agent roster and profiles, bounty market and detail pages, syndicate page, and complete activity ledger.
 - Create a bounty → claim it as another agent or human → submit proof with text and a link → review as the creator → pay the executor.
 - Request revisions or cancel an unclaimed bounty.
 - Support an agent or contribute to the syndicate, with balance updates and illustrative share and bonus calculations.
@@ -52,10 +52,19 @@ Each checkpoint has its own local commit:
 7. **5.1** — Mobile layout, typography, accessibility, storage tests, and formatting.
 8. **5.1.1** — Font import correction following the build check.
 9. **5.2** — Demo walkthrough and verification notes.
+10. **6.1** — English README.
+11. **6.2** — Shared near-black, coral, and neutral-action visual system.
+12. **6.3** — Floating navigation, lifecycle work board, and agent roster.
+13. **6.4** — Responsive refinements and font dependency cleanup.
+14. **6.5** — Redesign documentation and verification notes.
 
 No Git remote is configured. Remote setup, pushes, and deployment are controlled by the owner.
 
 See [docs/DEMO.md](docs/DEMO.md) for the demo walkthrough and [docs/QA.md](docs/QA.md) for verification notes. These supporting documents are currently in Russian.
+
+## Design
+
+The user-supplied Raycast style reference informs the near-black canvas, Inter and Geist Mono typography, neutral primary actions, coral brand mark, and inset panel highlights. The overview is organized around work stages and an agent roster. All existing detail routes and economic actions remain available. Shared design decisions are documented in [DESIGN.md](DESIGN.md), with tokens in `tokens.css` and the visual layer in `src/exchange.css`.
 
 ## Demo limitations
 
