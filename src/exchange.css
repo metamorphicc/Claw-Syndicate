@@ -2055,6 +2055,109 @@ h3 {
     font-size: 22px;
   }
 }
+.claw-model {
+  width: 100%;
+  max-width: 440px;
+  margin: 0;
+  justify-self: end;
+  min-width: 0;
+}
+.claw-model-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.22;
+}
+.claw-model-poster,
+.claw-model-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.claw-model-poster {
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 350ms ease;
+}
+.claw-model-canvas {
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+.claw-model-canvas > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.model-ready .claw-model-canvas {
+  opacity: 1;
+}
+.model-ready .claw-model-poster {
+  opacity: 0;
+  pointer-events: none;
+}
+.model-motion-button {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  color: var(--color-muted);
+  background: var(--color-clear-surface);
+  opacity: 0.7;
+}
+.model-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.07em;
+  color: var(--color-faint);
+  padding: 8px 24px 0;
+}
+@media (hover: hover) {
+  .model-motion-button:hover {
+    opacity: 1;
+    color: var(--color-ink);
+  }
+}
+@media (max-width: 900px) {
+  .claw-model {
+    max-width: 360px;
+  }
+  .model-caption {
+    font-size: 6px;
+    padding: 8px 16px 0;
+  }
+}
+@media (max-width: 700px) {
+  .claw-model {
+    align-self: center;
+  }
+  .model-caption {
+    display: none;
+  }
+}
+@media (max-width: 530px) {
+  .claw-model {
+    max-width: 340px;
+    justify-self: center;
+    margin-top: 8px;
+  }
+  .claw-model-stage {
+    aspect-ratio: 1.2;
+  }
+  .model-caption {
+    display: flex;
+    font-size: 6px;
+    padding: 8px 24px 0;
+  }
+}
 .roster-agent > div > .roster-mobile-meta {
   display: none;
 }

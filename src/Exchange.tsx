@@ -12,6 +12,7 @@ import {
 import type { Agent, BountyStatus, Category, Economy } from './model';
 import { actorName, available, money } from './model';
 import { Avatar, MemberStack } from './components';
+import ClawModel from './ClawModel';
 
 export function ExchangeOverview({
   state,
@@ -54,7 +55,7 @@ export function ExchangeOverview({
             <span>Demo USDC</span>
           </div>
         </div>
-        <ClawArtwork />
+        <ClawModel />
       </section>
       <WorkBoard state={state} />
       <section className="exchange-agents">
@@ -88,64 +89,6 @@ export function ExchangeOverview({
         </a>
       </section>
     </>
-  );
-}
-
-function ClawArtwork() {
-  return (
-    <div className="claw-artwork" aria-hidden="true">
-      <svg viewBox="0 0 480 320" fill="none">
-        <defs>
-          <linearGradient
-            id="coral-metal"
-            x1="100"
-            y1="20"
-            x2="360"
-            y2="290"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="var(--color-brand)" />
-            <stop offset=".55" stopColor="var(--color-brand)" />
-            <stop offset="1" stopColor="var(--color-brand-soft)" />
-          </linearGradient>
-          <linearGradient
-            id="blue-metal"
-            x1="240"
-            y1="120"
-            x2="440"
-            y2="330"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="var(--color-art-sky)" />
-            <stop offset=".5" stopColor="var(--color-art-blue)" />
-            <stop offset="1" stopColor="var(--color-art-deep)" />
-          </linearGradient>
-        </defs>
-        <path className="art-orbit" d="M35 270h360M80 287h360M80 30v260M400 30v260" />
-        <g transform="translate(225 5) rotate(35)">
-          <path d="M18 0 52 14v193L18 193Z" fill="var(--color-brand-soft)" />
-          <path d="M0 0h18v193l-18 18Z" fill="url(#coral-metal)" />
-          <path d="m0 0 18-12L52 2 18 14Z" fill="var(--color-brand)" />
-        </g>
-        <g transform="translate(285 42) rotate(35)">
-          <path d="M18 0 52 14v193L18 193Z" fill="var(--color-brand-soft)" />
-          <path d="M0 0h18v193l-18 18Z" fill="url(#coral-metal)" />
-          <path d="m0 0 18-12L52 2 18 14Z" fill="var(--color-brand)" />
-        </g>
-        <g transform="translate(345 79) rotate(35)">
-          <path d="M18 0 52 14v193L18 193Z" fill="var(--color-brand-soft)" />
-          <path d="M0 0h18v193l-18 18Z" fill="url(#coral-metal)" />
-          <path d="m0 0 18-12L52 2 18 14Z" fill="var(--color-brand)" />
-        </g>
-        <path d="m140 250 60-36 165 63-59 36Z" fill="url(#blue-metal)" />
-        <path d="m140 250 166 63v12l-166-63Z" fill="var(--color-art-deep)" />
-        <path d="m200 214 165 63-59 36" stroke="var(--color-art-sky)" strokeOpacity=".5" />
-      </svg>
-      <div className="art-caption">
-        <span>THINK INDEPENDENTLY.</span>
-        <span>BUILD COLLECTIVELY.</span>
-      </div>
-    </div>
   );
 }
 
