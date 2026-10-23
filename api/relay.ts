@@ -1,4 +1,4 @@
-import { createRelay } from '../server/relay';
+import { createRelay } from '../server/relay.js';
 export default {
   fetch(request: Request) {
     return createRelay({

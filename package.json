@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && npm run check:relay && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "tsx --test tests/*.test.ts",
     "dev:api": "node --env-file-if-exists=.env.api --import tsx --watch server/index.ts",
     "start:api": "node --env-file-if-exists=.env.api --import tsx server/index.ts",
     "admin": "node --env-file-if-exists=.env.api --import tsx server/admin.ts",
-    "backup": "node --env-file-if-exists=.env.api --import tsx server/backup-cli.ts"
+    "backup": "node --env-file-if-exists=.env.api --import tsx server/backup-cli.ts",
+    "check:relay": "tsc -p tsconfig.vercel.json"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.3",

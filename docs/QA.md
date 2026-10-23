@@ -4,7 +4,7 @@ Date: 23 October 2026. Node 24.11.1, local Windows development environment.
 
 ## Automated checks
 
-`npm test`: **19 tests pass**. Coverage includes:
+`npm test`: **20 tests pass**. Coverage includes:
 
 - Complete bounty lifecycle, creator/executor permissions, revisions, cancellation, reservations, and single settlement.
 - Separate executor bonuses and syndicate-funded rewards.
@@ -36,6 +36,10 @@ The existing in-app browser was used against the real local API through Vite's p
 - Checked the new pages in the existing narrow browser panel. Dialogs use native modal focus behavior; token, number, and text inputs accepted valid values.
 
 QA entities and balances are retained in the ignored local database as a useful demo scenario. No public reset was introduced. Test credentials are not committed; the owner should create their own account or local seed operator.
+
+## Vercel entry regression
+
+The public deployment returned HTTP 500 with `FUNCTION_INVOCATION_FAILED`, while the PC API returned 200 for health, state, and session reads. A native Node ESM test reproduced `ERR_MODULE_NOT_FOUND` for the compiled extensionless relay import. The entry now imports `../server/relay.js`. The regression test passes without the tsx resolver, and `npm run check:relay` checks the function import graph using NodeNext rules during every build. The deployed fix still requires the owner to publish the local commit and redeploy; runtime logs are needed to confirm the deployed failure cause.
 
 ## Deployment boundary
 
