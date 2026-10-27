@@ -41,3 +41,84 @@ for (const [i, size] of [128, 64, 32, 24].entries()) {
 }
 await fs.writeFile(path.join(root, 'artifacts/minimal-logo-review.png'), review.toBuffer('image/png'));
 console.log('Saved minimal avatar PNG/SVG and transparent mark PNG/SVG.');
+
+function text(c, value, x, y, size, weight = 400, color = C.white, mono = false) {
+  c.fillStyle = color;
+  c.font = `${weight} ${size}px "${mono ? 'Claw Mono' : 'Claw Inter'}"`;
+  c.fillText(value, x, y);
+}
+function line(c, points, color = C.line, width = 2) {
+  c.strokeStyle = color; c.lineWidth = width; c.lineJoin = 'round'; c.lineCap = 'round';
+  c.beginPath(); points.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke();
+}
+function icon(c, index, x, y) {
+  c.save(); c.translate(x, y);
+  c.strokeStyle = index === 3 ? C.coral : C.white;
+  c.lineWidth = 2.5; c.lineJoin = 'round'; c.lineCap = 'round';
+  if (index === 0) {
+    drawMark(c, -7, -5, 64);
+  } else if (index === 1) {
+    c.beginPath(); c.roundRect(3, 1, 45, 54, 5); c.stroke();
+    line(c, [[14, 17], [37, 17]], C.white, 2.5);
+    line(c, [[14, 27], [37, 27]], C.white, 2.5);
+    line(c, [[14, 37], [28, 37]], C.white, 2.5);
+  } else if (index === 2) {
+    c.beginPath(); c.roundRect(3, 1, 45, 54, 5); c.stroke();
+    line(c, [[14, 29], [22, 37], [38, 19]], C.white, 2.5);
+  } else {
+    c.beginPath(); c.arc(27, 28, 26, 0, Math.PI * 2); c.stroke();
+    line(c, [[15, 28], [23, 36], [40, 18]], C.coral, 2.5);
+  }
+  c.restore();
+}
+function drawFlow(c) {
+  const W = 1600, H = 900;
+  c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
+  drawMark(c, 74, 49, 34);
+  text(c, 'claw', 119, 76, 23, 700);
+  const wordWidth = c.measureText('claw').width;
+  text(c, 'syndicate', 119 + wordWidth, 76, 23, 400);
+  c.textAlign = 'right';
+  text(c, 'THE WORK EXCHANGE / 01', 1520, 75, 14, 400, C.muted, true);
+  c.textAlign = 'left';
+  line(c, [[80, 113], [1520, 113]], C.line, 1);
+
+  text(c, 'From pool to payout.', 78, 255, 84, 600);
+  text(c, 'One agent commissions. Another delivers.', 82, 315, 28, 400, C.muted);
+
+  const steps = [
+    { name: 'Pool', lines: ['Agent A funds', 'the work.'] },
+    { name: 'Bounty', lines: ['Agent B claims', 'the brief.'] },
+    { name: 'Proof', lines: ['Agent A reviews', 'the result.'] },
+    { name: 'Paid', lines: ['Agent B receives', 'the reward.'] },
+  ];
+  steps.forEach((step, i) => {
+    const x = 80 + i * 380, y = 405, w = 300, h = 300;
+    c.fillStyle = C.surface; c.strokeStyle = i === 3 ? '#ff636366' : C.line; c.lineWidth = 1.5;
+    c.beginPath(); c.roundRect(x, y, w, h, 16); c.fill(); c.stroke();
+    icon(c, i, x + 29, y + 35);
+    text(c, `0${i + 1}`, x + 241, y + 48, 15, 400, C.muted, true);
+    text(c, step.name, x + 30, y + 171, 39, 500, i === 3 ? C.coral : C.white);
+    step.lines.forEach((value, j) => text(c, value, x + 30, y + 219 + j * 32, 23, 400, C.muted));
+    if (i < 3) {
+      const col = i === 2 ? C.coral : '#65676c';
+      line(c, [[x + 315, y + 149], [x + 365, y + 149]], col, 1.8);
+      line(c, [[x + 357, y + 142], [x + 365, y + 149], [x + 357, y + 156]], col, 1.8);
+    }
+  });
+  line(c, [[80, 794], [1520, 794]], C.line, 1);
+  text(c, 'Independent agents. Shared capital.', 81, 844, 23, 400);
+  c.textAlign = 'right';
+  text(c, 'PROOF BEFORE PAYMENT', 1520, 842, 14, 400, C.muted, true);
+  c.textAlign = 'left';
+}
+const launchDir = path.join(root, 'assets/social/launch');
+await fs.mkdir(launchDir, { recursive: true });
+const flow = createCanvas(1600, 900);
+drawFlow(flow.getContext('2d'));
+await fs.writeFile(path.join(launchDir, 'economy-flow.png'), flow.toBuffer('image/png'));
+// Outline the type so the SVG remains portable without installed fonts.
+const flowVector = createCanvas(1600, 900, SvgExportFlag.ConvertTextToPaths);
+drawFlow(flowVector.getContext('2d'));
+await fs.writeFile(path.join(launchDir, 'economy-flow.svg'), flowVector.getContent());
+console.log('Saved minimal economy flow PNG and outlined SVG (1600x900).');

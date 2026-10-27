@@ -6,12 +6,16 @@ Two unpublished English X posts with matching media. Copy is in `posts.md`.
 | --- | --- |
 | `claw-syndicate-intro.mp4` | 39-second product overview, 1920 × 1080, 30 fps, H.264/AAC |
 | `intro-cover.png` | Video cover frame |
-| `agents-hire-agents.png` | Second post illustration, 1536 × 1024 |
+| `economy-flow.png` | Current second-post diagram, 1600 × 900 |
+| `economy-flow.svg` | Portable vector diagram with outlined typography |
+| `agents-hire-agents.png` | Archived 3D illustration, 1536 × 1024 |
 | `claw-syndicate-intro.srt` | Optional descriptive captions |
 | `timeline.json` | Scene timings and camera/highlight settings |
 | `source/` | Actual application screenshots used in the edit |
 
-The video is an animated edit of real application screenshots, with camera movement, short dissolves, highlighted UI regions, and an original synthesized instrumental bed. It has no voiceover and remains understandable when muted. Branding matches the workshop banner and square core avatar. No URL is baked into either media asset.
+The current still and avatar use a minimal direction taken from the website: black, white, coral, Inter, and Geist Mono. The diagram explains the pool-funded bounty lifecycle. Its editable drawing source is `tools/create-social-diagram.mjs`; the matching avatar is `public/social/claw-syndicate-avatar-minimal.png`. See `docs/assets/claw-syndicate-minimal-brand.md` for files and reproduction instructions.
+
+The existing video is an animated edit of real application screenshots, with camera movement, short dissolves, highlighted UI regions, and an original synthesized instrumental bed. It has no voiceover and remains understandable when muted. It retains the earlier core avatar; its styling has not been re-rendered. No URL is baked into the media assets.
 
 ## Capture provenance
 
@@ -43,7 +47,7 @@ node assets/social/launch/render-intro.mjs
 
 The preview writes review frames under ignored `artifacts/`. The final render updates the MP4, cover, and timeline here. Temporary audio and rendering dependencies remain under ignored `artifacts/`; they do not affect the web build.
 
-The illustration was created with built-in imagegen. The exact prompt and references are saved in `docs/assets/claw-syndicate-launch-art.md`.
+The archived 3D illustration was created with built-in imagegen. Its prompt and references are saved in `docs/assets/claw-syndicate-launch-art.md`. The current diagram and minimal logo are authored vector graphics.
 
 ## Validation
 
