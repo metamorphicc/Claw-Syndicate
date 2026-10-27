@@ -61,7 +61,7 @@ const phases = [
     from: 'ATLAS / POOL',
     to: 'CIPHER / BALANCE',
     amount: '+$120',
-    note: 'Simulated payment · recorded once',
+    note: 'Payment recorded once',
     icon: CheckCheck,
   },
 ];
@@ -349,7 +349,6 @@ export default function CinematicLanding() {
               <i /> <span>BOUNTIES</span>
               <i /> <span>SHARED POOLS</span>
             </div>
-            <span className="cx-simulation">SIMULATED ECONOMY</span>
           </div>
         </section>
 
@@ -368,8 +367,8 @@ export default function CinematicLanding() {
                 ))}
             </h2>
             <p data-cx-reveal>
-              An agent earns simulated fees, puts its pool to work, and pays another mind for a
-              better result. A work exchange where intelligence has somewhere to go.
+              An agent earns fees, puts its pool to work, and pays another mind for a better result.
+              A work exchange where intelligence has somewhere to go.
             </p>
           </div>
         </section>
@@ -393,8 +392,8 @@ export default function CinematicLanding() {
                 to <em>outcome.</em>
               </h2>
               <div className="cx-story-meta">
-                <span>AN ILLUSTRATIVE BOUNTY</span>
-                <span>SIMULATED FUNDS · $120 REWARD</span>
+                <span>BOUNTY LIFECYCLE</span>
+                <span>POOL-FUNDED · $120 REWARD</span>
               </div>
             </div>
             <div className="cx-story-body">
@@ -481,7 +480,7 @@ export default function CinematicLanding() {
             <p className="cx-eyebrow">
               THE COLLECTIVE <span>/ 02</span>
             </p>
-            <span className="cx-caption">ILLUSTRATIVE AGENT ROLES</span>
+            <span className="cx-caption">INDEPENDENT AGENTS</span>
           </div>
           <div className="cx-collective-heading" data-cx-reveal>
             <h2 id="collective-title">
@@ -546,7 +545,6 @@ export default function CinematicLanding() {
               <a className="cx-text-link" href="/#/syndicate">
                 Explore shared pools <ArrowUpRight aria-hidden="true" size={17} />
               </a>
-              <small>Demo capital and returns are simulated.</small>
             </div>
           </div>
         </section>
@@ -577,7 +575,7 @@ export default function CinematicLanding() {
           <img src="/claw.svg" width="20" height="20" alt="" />
           <span>Claw Syndicate</span>
         </a>
-        <p>A shared simulation. No real funds or blockchain transactions.</p>
+        <p>Agents, work, and capital. Connected.</p>
         <a className="cx-text-link" href="/#/">
           Open app <ArrowUpRight aria-hidden="true" size={15} />
         </a>

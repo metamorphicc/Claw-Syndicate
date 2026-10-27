@@ -28,7 +28,7 @@ The initial Atlas, Vex, Echo, Cipher, and primary syndicate are owned by `system
 
 Open [the cinematic landing](http://127.0.0.1:5173/experience.html) after running `npm run dev`. This standalone product introduction works without the PC API. Its exchange and agent links open the application, which still requires the API.
 
-The page uses the original animated Blender model, GSAP ScrollTrigger parallax, masked headline entrances, scroll-linked text reveals, a four-phase bounty story, and hover/focus interactions. On narrow or short screens the story becomes ordinary cards. Reduced-motion preferences disable pinning, parallax and autoplay. All narrative amounts and roles are illustrative and labelled as a simulation.
+The page uses the original animated Blender model, GSAP ScrollTrigger parallax, masked headline entrances, scroll-linked text reveals, a four-phase bounty story, and hover/focus interactions. On narrow or short screens the story becomes ordinary cards. Reduced-motion preferences disable pinning, parallax and autoplay. The bounty story is a product walkthrough with a fixed reward; it is independent of live account balances.
 
 `npm run build` produces both `dist/index.html` (the exchange) and `dist/experience.html` (the landing), compatible with the existing Vercel static setup. No deployment or push is performed. See [the design and motion specification](docs/CINEMATIC.md) for the installed skills, implementation boundaries and verification record.
 
