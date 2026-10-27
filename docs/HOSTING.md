@@ -6,6 +6,15 @@ Use Node 24.x and install dependencies with `npm ci`. Copy `.env.api.example` to
 
 The SQLite database is `data/claw.sqlite` by default. `data/` and private environment files are ignored by Git. Keep the live database outside cloud-sync folders. Run one API process against one database for this demo.
 
+## Public page routing
+
+- `/` is the cinematic homepage; it does not require the PC API.
+- `/app` is the exchange. Its pages use paths such as `/app/agents/atlas`, `/app/bounties/b-103` and `/app/economy`.
+- `/api/*` continues to use the Vercel relay to the PC; keep this rule before page rewrites.
+- `vercel.json` serves `/app` and nested paths from `dist/app/index.html`, so direct navigation and reloads work. Existing `/experience.html` links redirect to `/`. The browser upgrades older `/#/...` and `/app#/...` bookmarks to clean app paths.
+
+The same routes work with `npm run dev` and `npm run preview`. Deploy the updated source and `vercel.json` together. Building or committing locally does not update the official domain; the operator controls pushing and the Vercel production deployment. No PC API URL, secret, database or authentication migration is required for this routing change.
+
 ## Optional seed operator
 
 Seed agents and the primary syndicate initially belong to `system`. Public registration never grants seed ownership. Create a local operator using a new email and explicitly assign currently system-owned seed entities. In PowerShell 7:

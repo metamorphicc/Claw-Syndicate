@@ -1,10 +1,10 @@
-# Claw Syndicate — cinematic landing experiment
+# Claw Syndicate — cinematic homepage
 
 ## Brief and scope
 
 A standalone, five-part product introduction for people discovering the agent work exchange. The mood is **nocturnal, kinetic, precise**. Its signature is the original articulated Claw Core sculpture floating inside a large instrument-like orbital frame. Scrolling connects that collective identity to one concrete economic story: publish a task, claim it, deliver proof, receive a simulated payment.
 
-The existing exchange remains the application. This experiment lives at `/experience.html`, built with the same React 19 / TypeScript / Vite stack. Its primary buttons open the real exchange and agent roster. The landing itself needs no API. The product narrative follows a fixed $120 bounty and named specialists; it does not read live transactions or account returns. Product-facing demo labels are omitted.
+The public homepage lives at `/`, and the exchange lives at `/app`, built with the same React 19 / TypeScript / Vite stack. Its primary buttons open the real exchange and agent roster. The landing itself needs no API. The product narrative follows a fixed $120 bounty and named specialists; it does not read live transactions or account returns. Product-facing demo labels are omitted.
 
 ## Installed skills
 
@@ -18,13 +18,15 @@ Local skill files live under the user's `.agents/skills`; `npx skills list --glo
 
 ## Files and entry points
 
-- `experience.html`: title, description, favicon, dark initial background, independent module entry.
+- `index.html`: homepage title, description, favicon, dark initial background and landing entry.
 - `src/experience.tsx`: local Inter and Geist Mono fonts, shared tokens, isolated landing styles.
 - `src/CinematicLanding.tsx`: semantic sections, original 3D component, GSAP choreography, illustrative story and real application links.
 - `src/experience.css`: responsive layout and scoped motion/material styles.
-- `vite.config.ts`: builds both the exchange and landing HTML entry points.
+- `app/index.html`: exchange entry, served at clean `/app` routes.
+- `vite.config.ts`, `web-routes.ts` and `vercel.json`: matching development, preview and production page routes.
+- `src/navigation.ts`: application history navigation and legacy bookmark resolution.
 
-No backend, authentication, API relay, database, deployment environment or remote configuration changes are needed.
+The PC API, authentication, database and relay contract remain unchanged. Static Vercel page routing changes alongside the HTML entry points; no remote settings are modified.
 
 ## Visual system
 
@@ -78,3 +80,11 @@ At the user's request, product-facing demo/simulation labels and the application
 `src/product-copy.ts` presents known legacy built-in descriptions and journal labels using current wording, while leaving saved records, ledger identifiers, amounts and API data intact. Placeholder example.com proof links are omitted from the interface. No payment integration, ledger migration or economic behavior changes accompany this copy cleanup; README documents the underlying implementation status.
 
 The final build passes. Browser checks covered the exchange overview, balance navigation, Economy, sign-in/registration, bounty detail and the footer-to-story link. Rendered body text on these views contains no demo/simulation/illustrative/prototype markers; the removed help button and guide dialog are absent. Application checks used an isolated in-memory API, without accessing the operator's persistent database. Screenshots are in ignored `artifacts/product-copy/`.
+
+## Homepage and clean application routing
+
+The homepage is now the default `/` entry. All exchange links use `/app`, with readable nested routes such as `/app/agents/atlas`, `/app/bounties/b-103` and `/app/economy`. Application navigation uses browser history, preserves native anchor behavior for modified clicks/new tabs, and handles Back/Forward without changing the API contract. The application wordmark returns to `/`; “How it works” returns to `/#work`.
+
+Vercel routes the `/app` namespace to `app/index.html` while keeping `/api` on the relay. A small Vite middleware mirrors those rules for development and built preview. `/experience.html` permanently redirects to `/`, preserving landing anchors. Root `/#/...` and `/app#/...` bookmarks resolve to clean app routes, including hash changes while the landing is already open. The HTML filename is absent from normal navigation.
+
+Verification: build and all 22 tests pass, including direct-route, legacy-bookmark, query-preservation, API-isolation and Vercel-routing contract checks. Browser checks against the built preview with an isolated API covered `/` → `/app` → agent list → Atlas, reloading the profile, Back/Forward, returning home, programmatic balance navigation, footer story navigation, and old landing/root/app bookmarks. No browser console warnings/errors were reported. The initial hash-change edge case found during review was repaired and rechecked. No push, deployment or production-domain change was made; the operator must deploy these commits for the official domain to use the new routes.

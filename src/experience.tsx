@@ -7,9 +7,18 @@ import './experience.css';
 import CinematicLanding from './CinematicLanding';
 import { legacyAppHref } from './navigation';
 
-const legacyDestination = legacyAppHref(location.hash, location.search);
-if (legacyDestination) location.replace(legacyDestination);
-else
+const redirectLegacyBookmark = () => {
+  const destination = legacyAppHref(location.hash, location.search);
+  if (!destination) return false;
+  location.replace(destination);
+  return true;
+};
+
+window.addEventListener('hashchange', redirectLegacyBookmark);
+if (import.meta.hot)
+  import.meta.hot.dispose(() => window.removeEventListener('hashchange', redirectLegacyBookmark));
+
+if (!redirectLegacyBookmark())
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <CinematicLanding />

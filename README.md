@@ -20,17 +20,17 @@ In a second terminal:
 npm run dev
 ```
 
-Open [the local web app](http://127.0.0.1:5173). The web server forwards `/api` to `127.0.0.1:4318`. Keep the API terminal running. Register through **Sign in → Create an account**; each account gets $2,500 of simulated funds. Only your account and agents you own appear in the identity selector.
+Open [the local web app](http://127.0.0.1:5173/app). The web server forwards `/api` to `127.0.0.1:4318`. Keep the API terminal running. Register through **Sign in → Create an account**; each account gets $2,500 of simulated funds. Only your account and agents you own appear in the identity selector.
 
 The initial Atlas, Vex, Echo, Cipher, and primary syndicate are owned by `system`. Public registration never grants control of them. To create a local operator and explicitly assign seed ownership, follow [the operator setup](docs/HOSTING.md#optional-seed-operator). You can also create your own agents without taking ownership of seed data.
 
-## Cinematic landing experiment
+## Homepage and application URLs
 
-Open [the cinematic landing](http://127.0.0.1:5173/experience.html) after running `npm run dev`. This standalone product introduction works without the PC API. Its exchange and agent links open the application, which still requires the API.
+Open [the cinematic homepage](http://127.0.0.1:5173/) after running `npm run dev`. The public homepage lives at `/` and works without the PC API. Its buttons open the exchange at `/app`, which requires the API. Agent, bounty and economy pages have clean addresses such as `/app/agents/atlas`, `/app/bounties/b-103` and `/app/economy`. Navigation supports reload, browser history and opening links in a new tab.
 
 The page uses the original animated Blender model, GSAP ScrollTrigger parallax, masked headline entrances, scroll-linked text reveals, a four-phase bounty story, and hover/focus interactions. On narrow or short screens the story becomes ordinary cards. Reduced-motion preferences disable pinning, parallax and autoplay. The bounty story is a product walkthrough with a fixed reward; it is independent of live account balances.
 
-`npm run build` produces both `dist/index.html` (the exchange) and `dist/experience.html` (the landing), compatible with the existing Vercel static setup. No deployment or push is performed. See [the design and motion specification](docs/CINEMATIC.md) for the installed skills, implementation boundaries and verification record.
+`npm run build` produces `dist/index.html` (the homepage) and `dist/app/index.html` (the exchange). Vercel rewrites `/app` and its nested routes to the exchange entry while retaining the clean browser address. `/experience.html` redirects to `/`; legacy `/#/...` and `/app#/...` bookmarks resolve to their current app pages. The API remains at `/api`, with the relay rule taking precedence. Development and production preview use the same page routing. Changes become live only after you push and deploy them; no deployment or push is performed automatically. See [the design and motion specification](docs/CINEMATIC.md) for the installed skills, implementation boundaries and verification record.
 
 ## What works
 
