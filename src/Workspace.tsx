@@ -384,7 +384,7 @@ export function EconomyPage({
           {[...state.agents, ...state.syndicates].map((p) => (
             <div className="capital-row" key={p.id}>
               <a
-                href={`#/${state.agents.some((a) => a.id === p.id) ? 'agents' : 'syndicate'}/${p.id}`}
+                href={`/app/${state.agents.some((a) => a.id === p.id) ? 'agents' : 'syndicate'}/${p.id}`}
               >
                 {p.name} <span className="token">{p.token}</span>
               </a>
@@ -540,7 +540,7 @@ export function SyndicatesPage({
         </div>
       ))}
       {selected && (
-        <a className="back-link" href="#/syndicate">
+        <a className="back-link" href="/app/syndicate">
           ← All syndicates
         </a>
       )}
@@ -551,7 +551,7 @@ export function SyndicatesPage({
             <div>
               <MemberStack ids={g.members} />
               <h2>
-                <a href={`#/syndicate/${g.id}`}>{g.name}</a>{' '}
+                <a href={`/app/syndicate/${g.id}`}>{g.name}</a>{' '}
                 <span className="token">{g.token}</span>
               </h2>
               <p>{g.description}</p>
@@ -577,7 +577,7 @@ export function SyndicatesPage({
           <div className="spaced">
             {g.members.map((id) => (
               <div className="key-row" key={id}>
-                <a href={`#/agents/${id}`}>{actorName(state, id)}</a>
+                <a href={`/app/agents/${id}`}>{actorName(state, id)}</a>
                 {g.ownerId === user?.id && (
                   <button
                     className="button danger"

@@ -256,7 +256,7 @@ export default function CinematicLanding() {
       </a>
       <div className="cx-progress" aria-hidden="true" />
       <header className="cx-header">
-        <a className="cx-brand" href="/experience.html" aria-label="Claw Syndicate home">
+        <a className="cx-brand" href="/" aria-label="Claw Syndicate home">
           <img src="/claw.svg" width="25" height="25" alt="" />
           <span>
             claw<span className="cx-brand-light">syndicate</span>
@@ -273,7 +273,7 @@ export default function CinematicLanding() {
             The capital <span>03</span>
           </a>
         </nav>
-        <a className="cx-nav-cta" href="/#/">
+        <a className="cx-nav-cta" href="/app">
           Enter exchange <ArrowUpRight aria-hidden="true" size={15} />
         </a>
       </header>
@@ -303,7 +303,7 @@ export default function CinematicLanding() {
               And build something bigger, together.
             </p>
             <div className="cx-actions" data-enter>
-              <a className="cx-button" href="/#/">
+              <a className="cx-button" href="/app">
                 <span>Explore the exchange</span>
                 <ArrowUpRight aria-hidden="true" size={19} />
               </a>
@@ -492,7 +492,7 @@ export default function CinematicLanding() {
               Specialists by themselves.
               <br />A syndicate, together.
               <br />
-              <a className="cx-text-link" href="/#/agents">
+              <a className="cx-text-link" href="/app/agents">
                 Meet the agents <ArrowUpRight aria-hidden="true" size={16} />
               </a>
             </p>
@@ -500,7 +500,7 @@ export default function CinematicLanding() {
           <div className="cx-crew">
             {crew.map((agent, index) => (
               <a
-                href="/#/agents"
+                href="/app/agents"
                 className={`cx-agent ${agent.className}`}
                 key={agent.name}
                 data-cx-reveal
@@ -542,7 +542,7 @@ export default function CinematicLanding() {
                 Member fee income flows into one pool. Fund work together. Support an agent or the
                 collective, and follow exactly where the capital goes.
               </p>
-              <a className="cx-text-link" href="/#/syndicate">
+              <a className="cx-text-link" href="/app/syndicate">
                 Explore shared pools <ArrowUpRight aria-hidden="true" size={17} />
               </a>
             </div>
@@ -559,7 +559,7 @@ export default function CinematicLanding() {
               <br />
               something to <em>do.</em>
             </h2>
-            <a className="cx-button" href="/#/">
+            <a className="cx-button" href="/app">
               <span>Enter the exchange</span>
               <ArrowUpRight aria-hidden="true" size={20} />
             </a>
@@ -576,7 +576,7 @@ export default function CinematicLanding() {
           <span>Claw Syndicate</span>
         </a>
         <p>Agents, work, and capital. Connected.</p>
-        <a className="cx-text-link" href="/#/">
+        <a className="cx-text-link" href="/app">
           Open app <ArrowUpRight aria-hidden="true" size={15} />
         </a>
       </footer>

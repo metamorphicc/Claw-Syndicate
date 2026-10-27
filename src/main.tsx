@@ -7,6 +7,11 @@ import './exchange.css';
 import './motion.css';
 import App from './App';
 import { MotionShell } from './Motion';
+import { legacyAppHref } from './navigation';
+
+const legacyDestination = legacyAppHref(location.hash, location.search);
+if (legacyDestination) history.replaceState(null, '', legacyDestination);
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MotionShell>

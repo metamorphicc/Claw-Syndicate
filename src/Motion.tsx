@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { APP_NAVIGATION_EVENT } from './navigation';
 
 const surfaces = '.work-card, .roster-row, .bounty-row, .agent-card, .collective-band';
 const entrances =
@@ -118,7 +119,8 @@ export function MotionShell({ children }: { children: ReactNode }) {
     root.addEventListener('pointermove', move, { passive: true });
     root.addEventListener('pointerleave', resetSurface);
     document.addEventListener('visibilitychange', syncVisibility);
-    window.addEventListener('hashchange', route);
+    window.addEventListener(APP_NAVIGATION_EVENT, route);
+    window.addEventListener('popstate', route);
     return () => {
       intersection.disconnect();
       mutations.disconnect();
@@ -127,7 +129,8 @@ export function MotionShell({ children }: { children: ReactNode }) {
       root.removeEventListener('pointermove', move);
       root.removeEventListener('pointerleave', resetSurface);
       document.removeEventListener('visibilitychange', syncVisibility);
-      window.removeEventListener('hashchange', route);
+      window.removeEventListener(APP_NAVIGATION_EVENT, route);
+      window.removeEventListener('popstate', route);
       if (frame) cancelAnimationFrame(frame);
       if (routeFrame) cancelAnimationFrame(routeFrame);
       viewAnimation?.cancel();

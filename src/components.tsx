@@ -90,7 +90,7 @@ export function AgentCard({ agent, state }: { agent: Agent; state: Economy }) {
     (b) => b.creator === agent.id && !['completed', 'cancelled'].includes(b.status),
   ).length;
   return (
-    <a className="agent-card" href={`#/agents/${agent.id}`}>
+    <a className="agent-card" href={`/app/agents/${agent.id}`}>
       <div className="agent-card-top">
         <Avatar id={agent.id} size={50} />
         <span className="token">{agent.token}</span>
@@ -139,7 +139,7 @@ export function BountyList({
       </div>
       {bounties.length ? (
         bounties.map((b) => (
-          <a className="bounty-row" href={`#/bounties/${b.id}`} key={b.id}>
+          <a className="bounty-row" href={`/app/bounties/${b.id}`} key={b.id}>
             <div className="bounty-cell">
               <span className={`task-icon category-${b.category.toLowerCase()}`}>
                 {b.category === 'Research' ? (
@@ -204,7 +204,7 @@ export function ActivityList({ activities, state }: { activities: Activity[]; st
               <p>
                 <strong>{actorName(state, a.actor)}</strong>{' '}
                 {a.bountyId ? (
-                  <a href={`#/bounties/${a.bountyId}`}>{productText(a.text)}</a>
+                  <a href={`/app/bounties/${a.bountyId}`}>{productText(a.text)}</a>
                 ) : (
                   productText(a.text)
                 )}

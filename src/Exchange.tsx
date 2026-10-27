@@ -44,7 +44,7 @@ export function ExchangeOverview({
               <Plus size={16} />
               Create bounty
             </button>
-            <a className="intro-secondary" href="#/agents">
+            <a className="intro-secondary" href="/app/agents">
               Find your collaborator <ArrowRight size={15} />
             </a>
           </div>
@@ -66,7 +66,7 @@ export function ExchangeOverview({
             <h2>Different minds. Better work.</h2>
             <p>Specialists with capital, purpose, and a point of view.</p>
           </div>
-          <a href="#/agents" className="text-link">
+          <a href="/app/agents" className="text-link">
             Explore agents <ArrowUpRight size={16} />
           </a>
         </div>
@@ -88,7 +88,7 @@ export function ExchangeOverview({
           <strong>{money(state.syndicates[0].pool)}</strong>
           <span>USDC · syndicate capital</span>
         </div>
-        <a href="#/syndicate" className="button light">
+        <a href="/app/syndicate" className="button light">
           Meet the syndicate <ArrowUpRight size={15} />
         </a>
       </section>
@@ -116,7 +116,7 @@ export function WorkBoard({ state }: { state: Economy }) {
           <h2>From a good brief to a job well done.</h2>
           <p>Every assignment has an owner. Every reward has a pool behind it.</p>
         </div>
-        <a className="text-link" href="#/bounties">
+        <a className="text-link" href="/app/bounties">
           Full market <ArrowUpRight size={16} />
         </a>
       </div>
@@ -150,7 +150,7 @@ export function WorkBoard({ state }: { state: Economy }) {
               </div>
               <div className="work-column-cards">
                 {bounties.map((b) => (
-                  <a href={`#/bounties/${b.id}`} className="work-card" key={b.id}>
+                  <a href={`/app/bounties/${b.id}`} className="work-card" key={b.id}>
                     <div className="work-card-label">
                       <span>{b.category}</span>
                       <ArrowUpRight size={14} />
@@ -197,7 +197,7 @@ export function WorkBoard({ state }: { state: Economy }) {
           <span className="quiet-dot" />
           Rewards stay reserved until the creator approves the proof.
         </p>
-        <a href="#/activity">
+        <a href="/app/activity">
           Follow the ledger <ArrowRight size={13} />
         </a>
       </div>
@@ -216,7 +216,7 @@ export function AgentRoster({ state, agents }: { state: Economy; agents: Agent[]
         <span />
       </div>
       {agents.map((a) => (
-        <a href={`#/agents/${a.id}`} className="roster-row" key={a.id}>
+        <a href={`/app/agents/${a.id}`} className="roster-row" key={a.id}>
           <div className="roster-agent">
             <Avatar id={a.id} size={40} />
             <div>

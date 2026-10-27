@@ -25,6 +25,7 @@ import { BountyActions } from './BountyActions';
 import { AgentRoster, ExchangeOverview } from './Exchange';
 import { ActivityList, Avatar, BountyList, SectionTitle, Status } from './components';
 import { productText } from './product-copy';
+import { installAppNavigation, navigateApp, readAppRoute } from './navigation';
 
 export default function App() {
   const {
@@ -40,7 +41,7 @@ export default function App() {
     recover,
   } = useEconomy();
   const [actor, setActor] = useState<ActorId>('guest');
-  const [route, setRoute] = useState(location.hash.slice(1) || '/');
+  const [route, setRoute] = useState(() => readAppRoute(location.pathname));
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [creating, setCreating] = useState(false);
@@ -76,13 +77,12 @@ export default function App() {
   }, [toast]);
   useEffect(() => {
     const fn = () => {
-      setRoute(location.hash.slice(1) || '/');
+      setRoute(readAppRoute(location.pathname));
       setFilter('all');
       setQuery('');
       window.scrollTo(0, 0);
     };
-    window.addEventListener('hashchange', fn);
-    return () => window.removeEventListener('hashchange', fn);
+    return installAppNavigation(fn);
   }, []);
   const section = route.split('/')[1] || 'overview';
   const agent = state.agents.find((a) => route === `/agents/${a.id}`);
@@ -98,12 +98,12 @@ export default function App() {
         .includes(query.toLowerCase()),
   );
   const nav = [
-    { id: 'overview', label: 'Overview', icon: LayoutDashboard, href: '#/' },
-    { id: 'agents', label: 'Agents', icon: Users, href: '#/agents' },
-    { id: 'bounties', label: 'Bounty market', icon: ListTodo, href: '#/bounties' },
-    { id: 'syndicate', label: 'Syndicate', icon: Coins, href: '#/syndicate' },
-    { id: 'economy', label: 'Economy', icon: Coins, href: '#/economy' },
-    { id: 'activity', label: 'Activity', icon: Activity, href: '#/activity' },
+    { id: 'overview', label: 'Overview', icon: LayoutDashboard, href: '/app' },
+    { id: 'agents', label: 'Agents', icon: Users, href: '/app/agents' },
+    { id: 'bounties', label: 'Bounty market', icon: ListTodo, href: '/app/bounties' },
+    { id: 'syndicate', label: 'Syndicate', icon: Coins, href: '/app/syndicate' },
+    { id: 'economy', label: 'Economy', icon: Coins, href: '/app/economy' },
+    { id: 'activity', label: 'Activity', icon: Activity, href: '/app/activity' },
   ];
   const createBounty = () => {
     if (!user) {
@@ -142,7 +142,7 @@ export default function App() {
         Skip to content
       </a>
       <header className="exchange-nav">
-        <a href="#/" className="exchange-brand">
+        <a href="/" className="exchange-brand" aria-label="Claw Syndicate home">
           <img src="/claw.svg" alt="" />
           <span>
             claw<span>syndicate</span>
@@ -181,7 +181,7 @@ export default function App() {
             <button
               className="balance-button"
               onClick={() => {
-                location.hash = '/economy';
+                navigateApp('/economy');
               }}
               aria-label="View available balance"
             >
@@ -280,7 +280,7 @@ export default function App() {
           )}
           {agent && (
             <>
-              <a href="#/agents" className="back-link">
+              <a href="/app/agents" className="back-link">
                 <ArrowLeft size={15} />
                 All agents
               </a>
@@ -423,7 +423,7 @@ export default function App() {
           )}
           {bounty && (
             <>
-              <a href="#/bounties" className="back-link">
+              <a href="/app/bounties" className="back-link">
                 <ArrowLeft size={15} />
                 Bounty market
               </a>
@@ -437,7 +437,9 @@ export default function App() {
                     <Avatar id={bounty.creator} size={28} />
                     <span>
                       Posted by{' '}
-                      <a href={`#/agents/${bounty.creator}`}>{actorName(state, bounty.creator)}</a>
+                      <a href={`/app/agents/${bounty.creator}`}>
+                        {actorName(state, bounty.creator)}
+                      </a>
                     </span>
                     <Status status={bounty.status} />
                   </div>
@@ -578,7 +580,7 @@ export default function App() {
           (route.startsWith('/bounties/') && !bounty) ? (
             <div className="empty">
               <h1>Page not found</h1>
-              <a className="button" href="#/">
+              <a className="button" href="/app">
                 Back to overview
               </a>
             </div>
@@ -590,7 +592,7 @@ export default function App() {
               <span>Collective possibilities.</span>
             </div>
             <div className="footer-bottom">
-              <a className="exchange-brand" href="#/">
+              <a className="exchange-brand" href="/">
                 <img src="/claw.svg" alt="" />
                 <span>
                   claw<span>syndicate</span>
@@ -599,7 +601,7 @@ export default function App() {
               <span>
                 Agent-owned pools <i /> Proof before payment
               </span>
-              <a href="/experience.html#work">
+              <a href="/#work">
                 How it works <ArrowUpRight size={14} />
               </a>
             </div>
@@ -629,7 +631,7 @@ export default function App() {
           onCreated={(id, creator) => {
             setCreating(false);
             setActor(creator);
-            location.hash = '/bounties/' + id;
+            navigateApp('/bounties/' + id);
             setToast(
               'Bounty created. Reward reserved from ' + actorName(state, creator) + '’s pool.',
             );
@@ -664,7 +666,7 @@ export default function App() {
           onClose={() => setEntity(null)}
           onCreated={(path) => {
             setEntity(null);
-            location.hash = path;
+            navigateApp(path);
             setToast('Created. Manage fee income and pool capital in Economy.');
           }}
         />
