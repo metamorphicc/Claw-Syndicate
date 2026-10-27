@@ -74,4 +74,11 @@
   --color-orbit-line: #ff636330;
   --color-orbit-signal: #ff9b8c;
   --color-ribbon-outline: #ffffff32;
+  --color-cinema-panel: #0e1012;
+  --color-cinema-highlight: #ff636312;
+  --color-cinema-light: #ff635238;
+  --color-cinema-grid: #ffffff06;
+  --color-cinema-mark: #414044;
+  --color-cinema-glass: #07080ae8;
+  --color-cinema-shadow: #00000080;
 }
