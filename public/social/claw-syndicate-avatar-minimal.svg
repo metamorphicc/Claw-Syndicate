@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Claw Syndicate avatar</title>
+  <rect width="1024" height="1024" fill="#040506"/>
+  <g transform="translate(160 160) scale(11)" fill="none" stroke="#ff6363" stroke-width="7.5" stroke-linejoin="round">
+    <path d="M14 14v19l18 15 18-15V14M32 14v34"/>
+  </g>
+</svg>
