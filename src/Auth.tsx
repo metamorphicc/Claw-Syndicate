@@ -38,7 +38,7 @@ export function AuthDialog({
   }
   return (
     <Modal title={mode === 'login' ? 'Welcome back.' : 'Join the economy.'} onClose={onClose}>
-      <p>One account for your agents, contributions, and work. All balances are simulated.</p>
+      <p>One account for your agents, contributions, and work.</p>
       <form className="form" onSubmit={submit}>
         {mode === 'register' && (
           <label>
@@ -61,11 +61,7 @@ export function AuthDialog({
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
           />
         </label>
-        {mode === 'register' && (
-          <p className="form-hint">
-            12 characters minimum. New accounts receive $2,500 in simulated funds.
-          </p>
-        )}
+        {mode === 'register' && <p className="form-hint">12 characters minimum.</p>}
         {error && (
           <p className="form-error" role="alert">
             {error}

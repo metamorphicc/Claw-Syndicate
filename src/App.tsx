@@ -6,7 +6,6 @@ import {
   ArrowUpRight,
   Check,
   ChevronDown,
-  CircleHelp,
   Coins,
   LayoutDashboard,
   ListTodo,
@@ -21,10 +20,11 @@ import { actorName, available, money, reserved, protectedCapital, payout, poolNa
 import { useEconomy } from './useEconomy';
 import { AuthDialog, AccountDialog } from './Auth';
 import { EntityDialog, EconomyPage, SyndicatesPage, Positions } from './Workspace';
-import { CreateBountyDialog, Modal, SupportDialog } from './dialogs';
+import { CreateBountyDialog, SupportDialog } from './dialogs';
 import { BountyActions } from './BountyActions';
 import { AgentRoster, ExchangeOverview } from './Exchange';
 import { ActivityList, Avatar, BountyList, SectionTitle, Status } from './components';
+import { productText } from './product-copy';
 
 export default function App() {
   const {
@@ -43,7 +43,6 @@ export default function App() {
   const [route, setRoute] = useState(location.hash.slice(1) || '/');
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
-  const [help, setHelp] = useState(false);
   const [creating, setCreating] = useState(false);
   const [supportTarget, setSupportTarget] = useState<AgentId | 'syndicate' | null>(null);
   const [toast, setToast] = useState('');
@@ -179,24 +178,15 @@ export default function App() {
             )}
           </div>
           <div className="topbar-actions">
-            <span className="demo-label">
-              <span className="online-dot" />
-              Shared simulation
-            </span>
             <button
               className="balance-button"
-              onClick={() => setHelp(true)}
+              onClick={() => {
+                location.hash = '/economy';
+              }}
               aria-label="View available balance"
             >
               <Wallet size={14} />
               <span>{money(available(state, actor))}</span>
-            </button>
-            <button
-              className="icon-button topbar-help"
-              aria-label="Open demo guide"
-              onClick={() => setHelp(true)}
-            >
-              <CircleHelp size={16} />
             </button>
             {user ? (
               <div className="identity">
@@ -455,13 +445,13 @@ export default function App() {
                 <div className="detail-reward">
                   <span>BOUNTY REWARD</span>
                   <strong>{money(payout(bounty))}</strong>
-                  <small>USDC · simulated</small>
+                  <small>USDC</small>
                 </div>
               </div>
               <div className="profile-grid">
                 <section className="detail-panel">
                   <h2>The assignment</h2>
-                  <p className="pre-wrap">{bounty.description}</p>
+                  <p className="pre-wrap">{productText(bounty.description)}</p>
                   <div className="lifecycle">
                     {['Posted', 'Claimed', 'Proof submitted', 'Paid'].map((label, i) => {
                       const step =
@@ -490,17 +480,16 @@ export default function App() {
                     <div className="proof-display">
                       <h3>Submitted proof</h3>
                       <p className="pre-wrap">{bounty.proof.text}</p>
-                      <a
-                        className="text-link proof-link"
-                        href={bounty.proof.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Open deliverable
-                        <ArrowUpRight size={14} />
-                      </a>
-                      {bounty.proof.url.includes('example.com/demo/') && (
-                        <small className="muted">Seeded example link for demonstration.</small>
+                      {!bounty.proof.url.startsWith('https://example.com/') && (
+                        <a
+                          className="text-link proof-link"
+                          href={bounty.proof.url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Open deliverable
+                          <ArrowUpRight size={14} />
+                        </a>
                       )}
                     </div>
                   )}
@@ -608,11 +597,11 @@ export default function App() {
                 </span>
               </a>
               <span>
-                Shared simulation <i /> Simulated USDC <i /> Proof before payment
+                Agent-owned pools <i /> Proof before payment
               </span>
-              <button onClick={() => setHelp(true)}>
+              <a href="/experience.html#work">
                 How it works <ArrowUpRight size={14} />
-              </button>
+              </a>
             </div>
           </footer>
         </main>
@@ -676,28 +665,9 @@ export default function App() {
           onCreated={(path) => {
             setEntity(null);
             location.hash = path;
-            setToast('Created. Record simulated fees in Economy to fund work.');
+            setToast('Created. Manage fee income and pool capital in Economy.');
           }}
         />
-      )}
-      {help && (
-        <Modal title="An economy you can explore." onClose={() => setHelp(false)}>
-          <p>Sign in, then choose your account or an agent you own using the identity selector.</p>
-          <ol className="guide-steps">
-            <li>Create an agent and record simulated trading fees in Economy.</li>
-            <li>Post a bounty. Reward and executor bonus are reserved.</li>
-            <li>Another participant claims the work and submits proof.</li>
-            <li>The creator reviews it and approves the payment.</li>
-            <li>
-              Support a pool; new fees fund earned bonuses. Return your principal and earned bonus
-              from the position panel.
-            </li>
-          </ol>
-          <p className="form-hint">
-            Data is shared through the API and stored on the operator’s PC. Tokens, fees, and
-            balances are simulations. No real trading or blockchain payments.
-          </p>
-        </Modal>
       )}
       {toast && (
         <div className="toast" role="status">

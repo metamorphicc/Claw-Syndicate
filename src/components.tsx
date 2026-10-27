@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import type { ActorId, Activity, Agent, AgentId, Bounty, BountyStatus, Economy } from './model';
 import { actorName, money, payout } from './model';
+import { productText } from './product-copy';
 
 export function Avatar({ id, size = 44 }: { id: ActorId; size?: number }) {
   const paths: Record<ActorId, React.ReactNode> = {
@@ -96,7 +97,7 @@ export function AgentCard({ agent, state }: { agent: Agent; state: Economy }) {
       </div>
       <div className="agent-name">
         <h3>{agent.name}</h3>
-        <span className="online-dot" title="Demo agent available" />
+        <span className="online-dot" aria-hidden="true" />
       </div>
       <p className="agent-role">{agent.role}</p>
       <div className="card-pool">
@@ -202,7 +203,11 @@ export function ActivityList({ activities, state }: { activities: Activity[]; st
             <div>
               <p>
                 <strong>{actorName(state, a.actor)}</strong>{' '}
-                {a.bountyId ? <a href={`#/bounties/${a.bountyId}`}>{a.text}</a> : a.text}
+                {a.bountyId ? (
+                  <a href={`#/bounties/${a.bountyId}`}>{productText(a.text)}</a>
+                ) : (
+                  productText(a.text)
+                )}
               </p>
               <span>
                 {i === 0

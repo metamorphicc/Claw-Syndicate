@@ -151,10 +151,6 @@ h3 {
 .topbar-actions {
   gap: 24px;
 }
-.demo-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-}
 .balance-button {
   font-size: 11px;
   gap: 8px;
@@ -707,7 +703,7 @@ h3 {
   font-family: var(--font-mono);
   font-size: 9px;
 }
-.footer-bottom > button {
+.footer-bottom > a:last-child {
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -1126,9 +1122,6 @@ h3 {
   border-color: var(--color-muted);
   background: var(--color-raised);
 }
-.guide-steps {
-  font-size: 13px;
-}
 .toast {
   left: 50%;
   background: var(--color-raised);
@@ -1142,7 +1135,7 @@ h3 {
   .exchange-nav-link:hover,
   .intro-secondary:hover,
   .board-footnote a:hover,
-  .footer-bottom > button:hover {
+  .footer-bottom > a:last-child:hover {
     color: var(--color-ink);
   }
   .work-filters button:hover {
@@ -1206,9 +1199,6 @@ h3 {
   .roster-row {
     gap: 16px;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 90px minmax(0, 0.8fr) 16px;
-  }
-  .demo-label {
-    display: none;
   }
 }
 @media (max-width: 900px) {
@@ -1595,9 +1585,6 @@ h3 {
   .balance-button svg {
     width: 12px;
   }
-  .topbar-help {
-    min-width: 28px;
-  }
   .identity {
     gap: 4px;
   }
@@ -1837,7 +1824,7 @@ h3 {
     row-gap: 8px;
     font-size: 7px;
   }
-  .footer-bottom > button {
+  .footer-bottom > a:last-child {
     font-size: 10px;
   }
   .page-heading,
@@ -2377,9 +2364,6 @@ h3 {
   }
   .exchange-nav nav {
     overflow-x: auto;
-  }
-  .topbar-actions > .demo-label {
-    display: none;
   }
   .identity select {
     max-width: 120px;

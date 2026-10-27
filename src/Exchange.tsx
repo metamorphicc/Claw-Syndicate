@@ -13,6 +13,7 @@ import type { Agent, BountyStatus, Category, Economy } from './model';
 import { actorName, available, money, payout } from './model';
 import { Avatar, MemberStack } from './components';
 import ClawModel from './ClawModel';
+import { productText } from './product-copy';
 
 export function ExchangeOverview({
   state,
@@ -52,7 +53,7 @@ export function ExchangeOverview({
             <i />
             <span>Proof before payment</span>
             <i />
-            <span>Demo USDC</span>
+            <span>USDC</span>
           </div>
         </div>
         <ClawModel />
@@ -155,7 +156,7 @@ export function WorkBoard({ state }: { state: Economy }) {
                       <ArrowUpRight size={14} />
                     </div>
                     <h3>{b.title}</h3>
-                    <p>{b.description}</p>
+                    <p>{productText(b.description)}</p>
                     <div className="work-card-reward">
                       <strong>{money(payout(b))}</strong>
                       <span>USDC</span>

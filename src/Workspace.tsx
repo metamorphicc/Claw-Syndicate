@@ -14,6 +14,7 @@ import {
 import { Modal, type RunAction } from './dialogs';
 import { MemberStack, SectionTitle } from './components';
 import type { User } from './useEconomy';
+import { journalAccountLabel, productText } from './product-copy';
 export function EntityDialog({
   kind,
   state,
@@ -80,7 +81,7 @@ export function EntityDialog({
     >
       <p>
         {kind === 'agent'
-          ? 'Choose its specialty and simulated token. New agents start with an empty pool.'
+          ? 'Choose its specialty and token symbol. New agents start with an empty pool.'
           : 'Start with at least two of your independent agents. Invite other owners after creation.'}
       </p>
       <form className="form" onSubmit={submit}>
@@ -175,8 +176,7 @@ export function EntityDialog({
           </label>
         )}
         <p className="form-hint">
-          The bonus is a cap per contribution. It accrues only from received simulated fees. A token
-          symbol is a local record; no blockchain token is issued.
+          The bonus is a cap per contribution. It accrues only from received fees.
         </p>
         {error && (
           <p className="form-error" role="alert">
@@ -308,7 +308,7 @@ export function EconomyPage({
         agentId: String(d.get('agent')),
         gross: toCents(String(d.get('gross'))),
       });
-      notify('Simulated fees credited and backer bonuses allocated.');
+      notify('Fees recorded and backer bonuses allocated.');
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -320,7 +320,7 @@ export function EconomyPage({
       <div className="page-heading-copy">
         <div className="eyebrow">CAPITAL IN MOTION</div>
         <h1>Every dollar has a trail.</h1>
-        <p>Fees fund work and earned returns. All amounts below are simulated USDC.</p>
+        <p>Track fee income, pool capital, and earned returns.</p>
       </div>
       <div className="profile-grid spaced">
         <section className="detail-panel">
@@ -338,7 +338,7 @@ export function EconomyPage({
                 </select>
               </label>
               <label>
-                Gross simulated fees · USDC
+                Gross trading fees · USDC
                 <input name="gross" required inputMode="decimal" defaultValue="1000" />
               </label>
               <p className="form-hint">
@@ -346,11 +346,11 @@ export function EconomyPage({
                 fees flow into the shared syndicate pool. Only existing fee income can fund bonuses.
               </p>
               <button className="button primary" disabled={busy}>
-                {busy ? 'Recording…' : 'Record simulated fees'}
+                {busy ? 'Recording…' : 'Record fees'}
               </button>
             </form>
           ) : (
-            <p className="form-hint">Sign in and create an agent to simulate its trading fees.</p>
+            <p className="form-hint">Sign in and create an agent to manage its fee income.</p>
           )}
           {error && (
             <p className="form-error" role="alert">
@@ -438,13 +438,13 @@ export function EconomyPage({
             .map((tx) => (
               <details key={tx.id}>
                 <summary>
-                  {tx.memo}
+                  {productText(tx.memo)}
                   <small>{new Date(tx.at).toLocaleString()}</small>
                 </summary>
                 {tx.entries.length ? (
                   tx.entries.map((e, i) => (
                     <div className="key-row" key={i}>
-                      <code>{e.account}</code>
+                      <span>{journalAccountLabel(e.account)}</span>
                       <strong>
                         {e.delta >= 0 ? '+' : ''}
                         {money(e.delta)}

@@ -258,7 +258,7 @@ export function SupportDialog({
       onClose={onClose}
     >
       <p>
-        Move simulated USDC from {actorName(state, actor)} to {name}’s pool.
+        Contribute USDC from {actorName(state, actor)} to {name}’s pool.
       </p>
       <form className="form" onSubmit={submit}>
         <label>
@@ -309,9 +309,9 @@ export function SupportDialog({
           )}
         </div>
         <p className="form-hint">
-          Principal is protected from bounty spending. Bonuses accrue only when simulated trading
-          fees arrive, up to this cap. You can return principal plus already earned bonus from your
-          position panel.
+          Principal is protected from bounty spending. Bonuses accrue only when trading fees arrive,
+          up to this cap. You can return principal plus already earned bonus from your position
+          panel.
         </p>
         {error && (
           <p className="form-error" role="alert">
