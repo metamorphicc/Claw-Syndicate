@@ -1,0 +1,163 @@
+/* Hallmark · motion extension · existing Narrative Workflow / Raycast system
+ * primitives: scene motion · orchestrated entrance · tactile response
+ * User-requested kinetic treatment. P5 H5 E4 S5 R4 V5.
+ */
+.motion-root {
+  display: contents;
+}
+.motion-root .app-shell::before {
+  position: fixed;
+  inset: -6%;
+  background:
+    radial-gradient(
+      ellipse 660px 580px at 85% 22%,
+      var(--color-motion-atmosphere),
+      var(--color-transparent) 74%
+    ),
+    radial-gradient(
+      ellipse 800px 660px at 8% 78%,
+      var(--color-atmosphere-cool),
+      var(--color-transparent) 78%
+    );
+  animation: atmosphere-drift 22s var(--ease-motion-in-out) infinite alternate;
+}
+@keyframes atmosphere-drift {
+  from {
+    transform: translate3d(-1%, -1%, 0) scale(1);
+    opacity: 0.65;
+  }
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+@media (min-width: 640px) {
+  .motion-root[data-motion='full'] [data-revealed] {
+    transition:
+      opacity var(--dur-entrance) var(--ease-motion-out),
+      transform var(--dur-entrance) var(--ease-motion-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .motion-root[data-motion='full'] [data-revealed='false'] {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  .motion-root[data-motion='full'] [data-revealed='true'] {
+    opacity: 1;
+    transform: none;
+  }
+  .work-column:nth-child(2) {
+    --reveal-delay: 65ms;
+  }
+  .work-column:nth-child(3) {
+    --reveal-delay: 130ms;
+  }
+  .work-column:nth-child(4) {
+    --reveal-delay: 195ms;
+  }
+}
+.motion-root :is(.work-card, .roster-row, .bounty-row, .agent-card, .collective-band) {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform var(--dur-motion-short) var(--ease-motion-out),
+    border-color var(--dur-motion-short) var(--ease-motion-out),
+    background-color var(--dur-motion-short) var(--ease-motion-out);
+}
+.motion-root :is(.work-card, .roster-row, .bounty-row, .agent-card, .collective-band)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(
+    360px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    var(--color-motion-reflection),
+    var(--color-transparent) 70%
+  );
+  transition: opacity var(--dur-motion-short) var(--ease-motion-out);
+}
+.motion-root
+  :is(.work-card, .roster-row, .bounty-row, .agent-card, .collective-band):focus-within::after {
+  opacity: 0.6;
+}
+@media (hover: hover) and (pointer: fine) {
+  .motion-root [data-pointer-active='true']::after {
+    opacity: 1;
+  }
+  .motion-root .work-card[data-pointer-active='true'],
+  .motion-root .agent-card[data-pointer-active='true'] {
+    transform: perspective(900px) translateY(-5px) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg));
+    border-color: var(--color-motion-edge);
+  }
+  .motion-root .roster-row[data-pointer-active='true'],
+  .motion-root .bounty-row[data-pointer-active='true'] {
+    transform: translateX(4px);
+  }
+  .motion-root :is(.intro-secondary, .text-link, .collective-band .button):hover svg {
+    transform: translate(3px, -2px);
+  }
+}
+.motion-root :is(.intro-secondary, .text-link, .collective-band .button) svg {
+  transition: transform var(--dur-motion-short) var(--ease-motion-out);
+}
+.motion-root .button {
+  transition:
+    transform var(--dur-motion-short) var(--ease-motion-out),
+    background-color var(--dur-motion-short) var(--ease-motion-out),
+    border-color var(--dur-motion-short) var(--ease-motion-out);
+}
+.motion-root .button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+.motion-root .button:not(:disabled):active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: var(--dur-motion-micro);
+}
+.motion-root .native-modal[open] {
+  animation: dialog-arrive var(--dur-motion-long) var(--ease-motion-out) both;
+}
+.motion-root .native-modal[open]::backdrop {
+  animation: backdrop-arrive var(--dur-motion-long) var(--ease-motion-out) both;
+}
+@keyframes dialog-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes backdrop-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.motion-root .toast {
+  animation: dialog-arrive var(--dur-motion-long) var(--ease-motion-out) both;
+}
+.motion-root[data-motion-paused='true'] *,
+.motion-root[data-motion-paused='true'] *::before,
+.motion-root[data-motion-paused='true'] *::after {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-root *,
+  .motion-root *::before,
+  .motion-root *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .motion-root [data-revealed] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

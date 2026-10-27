@@ -62,4 +62,16 @@
   --radius-button: 8px;
   --dur-fast: 150ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-motion-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-motion-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-motion-micro: 100ms;
+  --dur-motion-short: 220ms;
+  --dur-motion-long: 420ms;
+  --dur-entrance: 680ms;
+  --color-motion-atmosphere: #ff63522b;
+  --color-motion-reflection: #ffffff10;
+  --color-motion-edge: #ffffff38;
+  --color-orbit-line: #ff636330;
+  --color-orbit-signal: #ff9b8c;
+  --color-ribbon-outline: #ffffff32;
 }
