@@ -51,6 +51,12 @@ h3,
 p {
   margin: 0;
 }
+h1,
+h2,
+h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 svg {
   flex-shrink: 0;
 }
@@ -215,7 +221,7 @@ em {
   min-height: max(740px, 100svh);
   padding: 144px 0 120px;
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   align-items: center;
 }
 .cx-hero::before {
@@ -533,9 +539,14 @@ em {
 }
 .cx-manifesto {
   display: grid;
-  grid-template-columns: 1fr 2.3fr;
-  gap: 64px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
   padding-block: 144px;
+}
+.cx-manifesto > div {
+  max-width: 960px;
+  width: 100%;
+  justify-self: end;
 }
 .cx-manifesto > .cx-eyebrow {
   align-self: start;
@@ -562,7 +573,6 @@ em {
 }
 .cx-work {
   padding-bottom: 96px;
-  scroll-margin-top: 108px;
 }
 .cx-section-heading {
   display: flex;
@@ -644,7 +654,7 @@ em {
 .cx-phase-detail {
   display: block;
   max-width: 34ch;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-muted);
   line-height: 1.65;
   margin-top: 8px;
@@ -690,7 +700,7 @@ em {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font: 9px/1.5 var(--font-mono);
+  font: 10px/1.5 var(--font-mono);
   letter-spacing: 0.05em;
   color: var(--color-muted);
 }
@@ -727,7 +737,7 @@ em {
   line-height: 1.1;
 }
 .cx-panel-content p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--color-muted);
   line-height: 1.7;
   max-width: 46ch;
@@ -737,7 +747,7 @@ em {
   display: flex;
   align-items: center;
   gap: 12px;
-  font: 8px/1.5 var(--font-mono);
+  font: 9px/1.5 var(--font-mono);
   color: var(--color-faint);
   margin-bottom: 24px;
 }
@@ -769,7 +779,7 @@ em {
 }
 .cx-panel-amount > span:not(.cx-paid-check) {
   color: var(--color-muted);
-  font: 9px/1.6 var(--font-mono);
+  font: 10px/1.6 var(--font-mono);
   max-width: 24ch;
 }
 .cx-story-panel-3 {
@@ -834,7 +844,6 @@ em {
 .cx-collective {
   padding-top: 64px;
   padding-bottom: 96px;
-  scroll-margin-top: 88px;
 }
 .cx-collective-heading {
   display: flex;
@@ -959,7 +968,6 @@ em {
   align-items: center;
   gap: 40px;
   padding-top: 80px;
-  scroll-margin-top: 104px;
 }
 .cx-capital::before {
   content: '';

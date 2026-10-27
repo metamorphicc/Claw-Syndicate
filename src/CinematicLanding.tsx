@@ -192,6 +192,7 @@ export default function CinematicLanding() {
             host.dataset.storyMode = 'pinned';
             setPinned(true);
             const progress = select('.cx-story-progress')[0];
+            const setProgress = gsap.quickSetter(progress, 'scaleX');
             storyTrigger.current = ScrollTrigger.create({
               trigger: '.cx-story-stage',
               start: 'top 88px',
@@ -201,7 +202,7 @@ export default function CinematicLanding() {
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 setActive(Math.min(3, Math.floor(self.progress * 4)));
-                gsap.set(progress, { scaleX: self.progress });
+                setProgress(self.progress);
               },
             });
           }
@@ -259,7 +260,6 @@ export default function CinematicLanding() {
           <img src="/claw.svg" width="25" height="25" alt="" />
           <span>
             claw<span className="cx-brand-light">syndicate</span>
-            <sup>®</sup>
           </span>
         </a>
         <nav className="cx-nav" aria-label="Main navigation">
@@ -274,7 +274,7 @@ export default function CinematicLanding() {
           </a>
         </nav>
         <a className="cx-nav-cta" href="/#/">
-          Enter exchange <ArrowUpRight size={15} />
+          Enter exchange <ArrowUpRight aria-hidden="true" size={15} />
         </a>
       </header>
 
@@ -305,10 +305,10 @@ export default function CinematicLanding() {
             <div className="cx-actions" data-enter>
               <a className="cx-button" href="/#/">
                 <span>Explore the exchange</span>
-                <ArrowUpRight size={19} />
+                <ArrowUpRight aria-hidden="true" size={19} />
               </a>
               <a className="cx-text-link" href="#work">
-                See how it works <ArrowDown size={16} />
+                See how it works <ArrowDown aria-hidden="true" size={16} />
               </a>
             </div>
             <p className="cx-hero-note" data-enter>
@@ -342,7 +342,7 @@ export default function CinematicLanding() {
           </div>
           <div className="cx-hero-foot">
             <a href="#work" className="cx-scroll-cue">
-              <ArrowDown size={16} /> SCROLL TO CONNECT THE DOTS
+              <ArrowDown aria-hidden="true" size={16} /> SCROLL TO CONNECT THE DOTS
             </a>
             <div>
               <span>AGENTS</span>
@@ -355,7 +355,7 @@ export default function CinematicLanding() {
 
         <section className="cx-manifesto cx-container" aria-labelledby="manifesto-title">
           <p className="cx-eyebrow" data-cx-reveal>
-            THE PREMISE <span>/ 01</span>
+            THE PREMISE <span>/ 00</span>
           </p>
           <div>
             <h2 id="manifesto-title">
@@ -377,7 +377,7 @@ export default function CinematicLanding() {
         <section className="cx-work cx-container" id="work" aria-labelledby="work-title">
           <div className="cx-section-heading" data-cx-reveal>
             <p className="cx-eyebrow">
-              THE WORK <span>/ 02</span>
+              THE WORK <span>/ 01</span>
             </p>
             <p>
               A complete loop.
@@ -412,11 +412,11 @@ export default function CinematicLanding() {
                       <strong>{phase.name}</strong>
                       <span className="cx-phase-detail">{phase.detail}</span>
                     </span>
-                    <ArrowUpRight size={16} />
+                    <ArrowUpRight aria-hidden="true" size={16} />
                   </button>
                 ))}
                 <a className="cx-text-link cx-skip-story" href="#collective">
-                  Skip to the collective <ArrowDown size={15} />
+                  Skip to the collective <ArrowDown aria-hidden="true" size={15} />
                 </a>
               </div>
               <div className="cx-story-panels">
@@ -440,7 +440,7 @@ export default function CinematicLanding() {
                       </div>
                       <div className="cx-panel-content">
                         <div className="cx-panel-icon">
-                          <Icon size={28} strokeWidth={1.3} />
+                          <Icon aria-hidden="true" size={28} strokeWidth={1.3} />
                         </div>
                         <h3>{phase.title}</h3>
                         <p>{phase.copy}</p>
@@ -448,7 +448,7 @@ export default function CinematicLanding() {
                       <div className="cx-transfer">
                         <span>{phase.from}</span>
                         <span className="cx-transfer-line">
-                          <ArrowRight size={16} />
+                          <ArrowRight aria-hidden="true" size={16} />
                         </span>
                         <span>{phase.to}</span>
                       </div>
@@ -457,7 +457,7 @@ export default function CinematicLanding() {
                         <span>{phase.note}</span>
                         {index === 3 && (
                           <span className="cx-paid-check">
-                            <Check size={20} />
+                            <Check aria-hidden="true" size={20} />
                           </span>
                         )}
                       </div>
@@ -479,7 +479,7 @@ export default function CinematicLanding() {
         >
           <div className="cx-section-heading" data-cx-reveal>
             <p className="cx-eyebrow">
-              THE COLLECTIVE <span>/ 03</span>
+              THE COLLECTIVE <span>/ 02</span>
             </p>
             <span className="cx-caption">ILLUSTRATIVE AGENT ROLES</span>
           </div>
@@ -494,7 +494,7 @@ export default function CinematicLanding() {
               <br />A syndicate, together.
               <br />
               <a className="cx-text-link" href="/#/agents">
-                Meet the agents <ArrowUpRight size={16} />
+                Meet the agents <ArrowUpRight aria-hidden="true" size={16} />
               </a>
             </p>
           </div>
@@ -508,7 +508,7 @@ export default function CinematicLanding() {
               >
                 <div className="cx-agent-top">
                   <span className="cx-caption">AGENT / 0{index + 1}</span>
-                  <ArrowUpRight size={19} />
+                  <ArrowUpRight aria-hidden="true" size={19} />
                 </div>
                 <div className="cx-agent-art" aria-hidden="true">
                   <span>{agent.glyph}</span>
@@ -531,7 +531,7 @@ export default function CinematicLanding() {
               <span>POOL</span>
             </div>
             <div>
-              <p className="cx-eyebrow">THE CAPITAL / ONE SHARED POOL</p>
+              <p className="cx-eyebrow">THE CAPITAL / 03 · ONE SHARED POOL</p>
               <h3>
                 More than the sum
                 <br />
@@ -543,8 +543,8 @@ export default function CinematicLanding() {
                 Member fee income flows into one pool. Fund work together. Support an agent or the
                 collective, and follow exactly where the capital goes.
               </p>
-              <a className="cx-text-link" href="/#/">
-                Explore shared pools <ArrowUpRight size={17} />
+              <a className="cx-text-link" href="/#/syndicate">
+                Explore shared pools <ArrowUpRight aria-hidden="true" size={17} />
               </a>
               <small>Demo capital and returns are simulated.</small>
             </div>
@@ -563,7 +563,7 @@ export default function CinematicLanding() {
             </h2>
             <a className="cx-button" href="/#/">
               <span>Enter the exchange</span>
-              <ArrowUpRight size={20} />
+              <ArrowUpRight aria-hidden="true" size={20} />
             </a>
             <p>Post the brief. Find your specialist. Pay for the result.</p>
           </div>
@@ -579,7 +579,7 @@ export default function CinematicLanding() {
         </a>
         <p>A shared simulation. No real funds or blockchain transactions.</p>
         <a className="cx-text-link" href="/#/">
-          Open app <ArrowUpRight size={15} />
+          Open app <ArrowUpRight aria-hidden="true" size={15} />
         </a>
       </footer>
     </div>

@@ -28,3 +28,9 @@ At narrow widths the navigation wraps as one accessible navigation region. Board
 ## Source of truth
 
 `tokens.css` owns colors, fonts, spacing, and elevation tokens. `src/exchange.css` applies the new shared visual layer after the original base stylesheet. `src/Exchange.tsx` owns the work board and roster composition. Existing routes are preserved.
+
+## Motion extension and cinematic experiment
+
+The subsequent user request for a livelier interface supersedes the earlier static-background restriction. `src/Motion.tsx` and `src/motion.css` add one-shot entrances, small pointer responses, and a slow atmospheric layer to the exchange. Reduced motion, document visibility and offscreen scenes gate that movement.
+
+The standalone `/experience.html` explores a more expressive product introduction without replacing the exchange. It retains the original Claw Core asset and near-black/coral palette, with larger, tightly tracked display type. `src/experience.css` is isolated to that entry point. Its GSAP scroll story pins only on wide, sufficiently tall screens; other layouts and reduced motion keep every panel in document flow. See `docs/CINEMATIC.md` for choreography and verification. Simulation labels remain explicit, and all artwork is local.
