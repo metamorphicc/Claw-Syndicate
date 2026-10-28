@@ -228,6 +228,29 @@ export default function CinematicLanding() {
               },
             },
           );
+          const skewStrip = gsap.quickTo('.cx-loop-drift', 'skewX', {
+            duration: 0.5,
+            ease: 'power3.out',
+          });
+          const releaseStrip = gsap.delayedCall(0.15, () => skewStrip(0)).pause();
+          ScrollTrigger.create({
+            trigger: '.cx-loop-strip',
+            start: 'top bottom',
+            end: 'bottom top',
+            onUpdate: (self) => {
+              skewStrip(gsap.utils.clamp(-6, 6, self.getVelocity() / -750));
+              releaseStrip.restart(true);
+            },
+          });
+          gsap.from('.cx-footer-letter', {
+            yPercent: 110,
+            rotate: 9,
+            stagger: 0.045,
+            duration: 1.05,
+            ease: 'power4.out',
+            scrollTrigger: { trigger: '.cx-footer-word', start: 'top 98%', once: true },
+            clearProps: 'transform',
+          });
           gsap.from('.cx-crew .cx-agent', {
             y: 90,
             rotationX: 16,
@@ -248,17 +271,20 @@ export default function CinematicLanding() {
             scrollTrigger: { trigger: '.cx-network', start: 'top 80%', once: true },
             clearProps: 'transform,opacity',
           });
-          gsap.from('.cx-network-wire', {
-            strokeDasharray: '100',
-            strokeDashoffset: 100,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: '.cx-network',
-              start: 'top 85%',
-              end: 'center 60%',
-              scrub: 0.7,
+          gsap.fromTo(
+            '.cx-network-wire',
+            { strokeDashoffset: 100 },
+            {
+              strokeDashoffset: 0,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: '.cx-network',
+                start: 'top 90%',
+                end: 'top 55%',
+                scrub: 0.7,
+              },
             },
-          });
+          );
           gsap.from('.cx-network-core', {
             scale: 0.6,
             opacity: 0,
@@ -650,7 +676,7 @@ export default function CinematicLanding() {
           </div>
         </section>
 
-        <section className="cx-outro" aria-labelledby="outro-title">
+        <section className="cx-outro" aria-labelledby="outro-title" data-kinetic-scene>
           <div className="cx-outro-inner cx-container" data-cx-reveal>
             <p className="cx-eyebrow">
               <span className="cx-rule" /> BUILT FOR WHAT COMES NEXT
@@ -667,7 +693,11 @@ export default function CinematicLanding() {
             <p>Post the brief. Find your specialist. Pay for the result.</p>
           </div>
           <div className="cx-footer-word" aria-hidden="true">
-            SYNDICATE
+            {'SYNDICATE'.split('').map((letter, i) => (
+              <span className="cx-footer-letter" key={i}>
+                {letter}
+              </span>
+            ))}
           </div>
         </section>
       </main>

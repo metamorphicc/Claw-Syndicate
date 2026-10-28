@@ -3,7 +3,7 @@ import { APP_NAVIGATION_EVENT } from './navigation';
 
 const surfaces = '.work-card, .roster-row, .bounty-row, .agent-card, .collective-band';
 const entrances =
-  '[data-reveal], .work-column, .exchange-section-heading, .agent-roster, .collective-band';
+  '[data-reveal], .work-column, .exchange-section-heading, .agent-roster, .collective-band, .work-card, .roster-row, .bounty-row, .agent-card';
 
 /** One observer and one pointer delegate for the whole app, including newly mounted routes. */
 export function MotionShell({ children }: { children: ReactNode }) {
@@ -48,6 +48,10 @@ export function MotionShell({ children }: { children: ReactNode }) {
         if (element.matches('[data-motion-scene]')) {
           intersection.observe(element);
         } else if (!preference.matches && desktop.matches) {
+          if (element.matches(surfaces) && element.parentElement) {
+            const index = [...element.parentElement.children].indexOf(element);
+            element.style.setProperty('--reveal-delay', `${Math.min(index * 55, 220)}ms`);
+          }
           element.dataset.revealed = 'false';
           intersection.observe(element);
         }
@@ -87,8 +91,8 @@ export function MotionShell({ children }: { children: ReactNode }) {
         const y = Math.max(0, Math.min(1, (lastY - box.top) / Math.max(box.height, 1)));
         active.style.setProperty('--pointer-x', `${x * 100}%`);
         active.style.setProperty('--pointer-y', `${y * 100}%`);
-        active.style.setProperty('--tilt-x', `${(0.5 - y) * 3}deg`);
-        active.style.setProperty('--tilt-y', `${(x - 0.5) * 3}deg`);
+        active.style.setProperty('--tilt-x', `${(0.5 - y) * 8}deg`);
+        active.style.setProperty('--tilt-y', `${(x - 0.5) * 8}deg`);
         active.dataset.pointerActive = 'true';
       });
     };
@@ -101,10 +105,10 @@ export function MotionShell({ children }: { children: ReactNode }) {
         viewAnimation?.cancel();
         viewAnimation = root.querySelector('.main-content')?.animate(
           [
-            { opacity: 0, transform: 'translateY(8px)' },
+            { opacity: 0, transform: 'translateY(24px) scale(0.995)' },
             { opacity: 1, transform: 'none' },
           ],
-          { duration: 360, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+          { duration: 620, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
         );
       });
     };

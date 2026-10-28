@@ -1,5 +1,7 @@
 # Claw Syndicate — cinematic homepage
 
+The later kinetic motion pass is specified and verified in [MOTION.md](MOTION.md). It adds character choreography, velocity-reactive type, a deeper bounty-card deck, and the interactive capital network. The original implementation and review record below is retained for context; current timings and responsive pinning rules are in the newer document.
+
 ## Brief and scope
 
 A standalone, five-part product introduction for people discovering the agent work exchange. The mood is **nocturnal, kinetic, precise**. Its signature is the original articulated Claw Core sculpture floating inside a large instrument-like orbital frame. Scrolling connects that collective identity to one concrete economic story: publish a task, claim it, deliver proof, receive a simulated payment.

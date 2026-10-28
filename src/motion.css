@@ -35,16 +35,16 @@
   .motion-root[data-motion='full'] [data-revealed] {
     transition:
       opacity var(--dur-entrance) var(--ease-motion-out),
-      transform var(--dur-entrance) var(--ease-motion-out);
+      translate 850ms var(--ease-motion-out);
     transition-delay: var(--reveal-delay, 0ms);
   }
   .motion-root[data-motion='full'] [data-revealed='false'] {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+    translate: 0 30px;
   }
   .motion-root[data-motion='full'] [data-revealed='true'] {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
   }
   .work-column:nth-child(2) {
     --reveal-delay: 65ms;
@@ -60,7 +60,7 @@
   position: relative;
   isolation: isolate;
   transition:
-    transform var(--dur-motion-short) var(--ease-motion-out),
+    transform 480ms var(--ease-motion-out),
     border-color var(--dur-motion-short) var(--ease-motion-out),
     background-color var(--dur-motion-short) var(--ease-motion-out);
 }
@@ -89,13 +89,13 @@
   }
   .motion-root .work-card[data-pointer-active='true'],
   .motion-root .agent-card[data-pointer-active='true'] {
-    transform: perspective(900px) translateY(-5px) rotateX(var(--tilt-x, 0deg))
+    transform: perspective(900px) translateY(-8px) rotateX(var(--tilt-x, 0deg))
       rotateY(var(--tilt-y, 0deg));
     border-color: var(--color-motion-edge);
   }
   .motion-root .roster-row[data-pointer-active='true'],
   .motion-root .bounty-row[data-pointer-active='true'] {
-    transform: translateX(4px);
+    transform: translateX(7px);
   }
   .motion-root :is(.intro-secondary, .text-link, .collective-band .button):hover svg {
     transform: translate(3px, -2px);
@@ -169,5 +169,39 @@
   .motion-root [data-revealed] {
     opacity: 1 !important;
     transform: none !important;
+    translate: 0 0 !important;
   }
+}
+
+.motion-root :is(.work-card, .agent-card):active {
+  scale: 0.985;
+}
+.motion-root .button.primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.motion-root .button.primary::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: -60% -30%;
+  z-index: -1;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    var(--color-motion-reflection) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.7s var(--ease-motion-out);
+}
+.motion-root .button.primary:hover::after {
+  transform: translateX(100%);
+}
+.motion-root .work-filters button {
+  transition:
+    background-color 0.35s,
+    color 0.35s,
+    border-color 0.35s;
 }

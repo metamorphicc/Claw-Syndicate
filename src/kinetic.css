@@ -384,6 +384,8 @@
 .cx-network-wire {
   stroke: var(--color-line-strong);
   stroke-width: 1;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
   transition: stroke 0.6s;
 }
 .cx-network-stream {
@@ -448,10 +450,13 @@
   font-size: 15px;
   font-weight: 450;
 }
+.cx-network-node > span:nth-child(2) {
+  min-width: 0;
+}
 .cx-network-node small {
   display: block;
   color: var(--color-muted);
-  font: 8px/1.6 var(--font-mono);
+  font: 9px/1.6 var(--font-mono);
   margin-top: 5px;
 }
 .cx-network-indicator {
@@ -576,6 +581,9 @@
   .cx-network-lines {
     display: none;
   }
+  .cx-network-lines * {
+    animation: none;
+  }
   .cx-network-node {
     width: calc(50% - 8px);
     min-height: 72px;
@@ -615,7 +623,9 @@
     top: 178px;
     height: 32px;
     width: 1px;
-    background: var(--color-brand);
+    background: linear-gradient(180deg, transparent, var(--color-brand), transparent);
+    background-size: 100% 200%;
+    animation: cx-mobile-stream 1.8s linear infinite;
   }
   .cx-network-status {
     gap: 12px;
@@ -626,6 +636,11 @@
   }
   .cx-network-status .cx-text-link {
     font-size: 10px;
+  }
+}
+@keyframes cx-mobile-stream {
+  to {
+    background-position: 0 200%;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -644,5 +659,40 @@
   .cx-transfer-line::after {
     animation: none;
     display: none;
+  }
+}
+.cx-footer-word {
+  overflow: clip;
+  padding-top: 0.12em;
+  margin-top: -0.12em;
+}
+.cx-footer-letter {
+  display: inline-block;
+  transition:
+    color 0.45s,
+    -webkit-text-stroke-color 0.45s,
+    translate 0.7s var(--ease-motion-out),
+    rotate 0.7s var(--ease-motion-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cx-footer-letter:hover {
+    color: var(--color-brand);
+    -webkit-text-stroke-color: var(--color-brand);
+    translate: 0 -0.08em;
+    rotate: -4deg;
+  }
+}
+.cx-outro::before {
+  animation: cx-outro-breathe 7s ease-in-out infinite alternate;
+  transform-origin: 50% 80%;
+}
+@keyframes cx-outro-breathe {
+  from {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.08);
   }
 }
