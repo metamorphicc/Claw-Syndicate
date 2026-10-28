@@ -60,6 +60,7 @@ export function createClawScene(
   let visible = true;
   let frame = 0;
   let lastTime = 0;
+  let elapsed = 0;
   let mixer: THREE.AnimationMixer | undefined;
   let model: THREE.Group | undefined;
   const pointer = { x: 0, y: 0 };
@@ -79,9 +80,12 @@ export function createClawScene(
     if (disposed || paused || !visible || document.hidden || !loaded) return;
     const delta = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0;
     lastTime = time;
-    mixer?.update(delta);
-    stage.rotation.y += (pointer.x * 0.18 - stage.rotation.y) * 0.045;
-    stage.rotation.x += (pointer.y * 0.12 - stage.rotation.x) * 0.045;
+    elapsed += delta;
+    mixer?.update(delta * 1.12);
+    stage.rotation.y = THREE.MathUtils.damp(stage.rotation.y, pointer.x * 0.28 + Math.sin(elapsed * 0.32) * 0.12, 3, delta);
+    stage.rotation.x = THREE.MathUtils.damp(stage.rotation.x, pointer.y * 0.16, 3, delta);
+    stage.position.y = Math.sin(elapsed * 0.85) * 0.07;
+    coreLight.intensity = 1.8 + Math.sin(elapsed * 1.1) * 0.35;
     draw();
     frame = requestAnimationFrame(tick);
   }

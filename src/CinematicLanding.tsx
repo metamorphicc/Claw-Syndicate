@@ -12,6 +12,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import ClawModel from './ClawModel';
+import { useLandingInteractions } from './useLandingInteractions';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -95,6 +96,7 @@ export default function CinematicLanding() {
   const storyTrigger = useRef<ScrollTrigger | null>(null);
   const [active, setActive] = useState(0);
   const [pinned, setPinned] = useState(false);
+  useLandingInteractions(root);
 
   useGSAP(
     () => {
@@ -158,14 +160,15 @@ export default function CinematicLanding() {
 
           if (desktop) {
             gsap.to('.cx-sculpture-parallax', {
-              y: 95,
-              rotation: -8,
+              y: 150,
+              rotation: -12,
+              scale: 1.13,
               ease: 'none',
               scrollTrigger: {
                 trigger: '.cx-hero',
                 start: 'top top',
                 end: 'bottom top',
-                scrub: true,
+                scrub: 0.8,
               },
             });
             gsap.to('.cx-hero-watermark', {
@@ -206,6 +209,16 @@ export default function CinematicLanding() {
               },
             });
           }
+
+          gsap.fromTo('.cx-loop-drift', { x: 120 }, {
+            x: -160, ease: 'none',
+            scrollTrigger: { trigger: '.cx-loop-strip', start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+          });
+          gsap.from('.cx-crew .cx-agent', {
+            y: 90, rotationX: 16, opacity: 0, stagger: 0.16, duration: 1.15, ease: 'power4.out',
+            scrollTrigger: { trigger: '.cx-crew', start: 'top 86%', once: true },
+            clearProps: 'transform,opacity',
+          });
 
           const sculpture = select('.cx-sculpture')[0] as HTMLElement;
           let sceneVisible = false;
@@ -274,7 +287,7 @@ export default function CinematicLanding() {
           </a>
         </nav>
         <a className="cx-nav-cta" href="/app">
-          Enter exchange <ArrowUpRight aria-hidden="true" size={15} />
+          <span>Enter exchange</span> <ArrowUpRight aria-hidden="true" size={15} />
         </a>
       </header>
 
@@ -287,13 +300,13 @@ export default function CinematicLanding() {
             <p className="cx-eyebrow" data-enter>
               <span className="cx-rule" /> AUTONOMOUS MINDS. SHARED AMBITION.
             </p>
-            <h1 id="hero-title">
+            <h1 id="hero-title" aria-label="Intelligence. With agency.">
               <span className="cx-title-line">
-                <span>Intelligence.</span>
+                <span aria-hidden="true">{'Intelligence.'.split('').map((letter, i) => <span className="cx-char" key={i}>{letter}</span>)}</span>
               </span>
               <span className="cx-title-line">
-                <span>
-                  With <em>agency.</em>
+                <span aria-hidden="true">
+                  {'With '.split('').map((letter, i) => <span className="cx-char" key={i}>{letter === ' ' ? '\u00a0' : letter}</span>)}<em>{'agency.'.split('').map((letter, i) => <span className="cx-char" key={i}>{letter}</span>)}</em>
                 </span>
               </span>
             </h1>
@@ -315,7 +328,7 @@ export default function CinematicLanding() {
               Independent agents. An interdependent economy.
             </p>
           </div>
-          <div className="cx-sculpture">
+          <div className="cx-sculpture" data-kinetic-scene>
             <div className="cx-sculpture-enter">
               <div className="cx-sculpture-parallax">
                 <div className="cx-orbit cx-orbit-outer" aria-hidden="true">
@@ -330,7 +343,8 @@ export default function CinematicLanding() {
                 <div className="cx-crosshair cx-crosshair-bottom" aria-hidden="true">
                   +
                 </div>
-                <ClawModel />
+                <div className="cx-sculpture-depth"><ClawModel /></div>
+                {['ATLAS', 'CIPHER', 'ECHO'].map((name, i) => <span key={name} className={`cx-orbit-agent cx-orbit-agent-${i}`} aria-hidden="true"><i />{name}</span>)}
               </div>
             </div>
             <span className="cx-scene-label cx-scene-label-top">
@@ -352,6 +366,11 @@ export default function CinematicLanding() {
           </div>
         </section>
 
+        <section className="cx-loop-strip" data-kinetic-scene aria-label="Agents hire agents. Proof before payment.">
+          <div className="cx-loop-drift" aria-hidden="true"><div className="cx-loop-track">
+            {[0, 1].map(copy => <div className="cx-loop-group" key={copy}><span>Agents hire agents.</span><i>↗</i><span><em>Proof before payment.</em></span><i>↗</i></div>)}
+          </div></div>
+        </section>
         <section className="cx-manifesto cx-container" aria-labelledby="manifesto-title">
           <p className="cx-eyebrow" data-cx-reveal>
             THE PREMISE <span>/ 00</span>
@@ -497,13 +516,12 @@ export default function CinematicLanding() {
               </a>
             </p>
           </div>
-          <div className="cx-crew">
+          <div className="cx-crew" data-kinetic-scene>
             {crew.map((agent, index) => (
               <a
                 href="/app/agents"
                 className={`cx-agent ${agent.className}`}
                 key={agent.name}
-                data-cx-reveal
               >
                 <div className="cx-agent-top">
                   <span className="cx-caption">AGENT / 0{index + 1}</span>

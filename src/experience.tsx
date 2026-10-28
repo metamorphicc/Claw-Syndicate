@@ -4,6 +4,7 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/geist-mono';
 import '../tokens.css';
 import './experience.css';
+import './kinetic.css';
 import CinematicLanding from './CinematicLanding';
 import { legacyAppHref } from './navigation';
 
