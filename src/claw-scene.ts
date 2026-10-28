@@ -82,7 +82,12 @@ export function createClawScene(
     lastTime = time;
     elapsed += delta;
     mixer?.update(delta * 1.12);
-    stage.rotation.y = THREE.MathUtils.damp(stage.rotation.y, pointer.x * 0.28 + Math.sin(elapsed * 0.32) * 0.12, 3, delta);
+    stage.rotation.y = THREE.MathUtils.damp(
+      stage.rotation.y,
+      pointer.x * 0.28 + Math.sin(elapsed * 0.32) * 0.12,
+      3,
+      delta,
+    );
     stage.rotation.x = THREE.MathUtils.damp(stage.rotation.x, pointer.y * 0.16, 3, delta);
     stage.position.y = Math.sin(elapsed * 0.85) * 0.07;
     coreLight.intensity = 1.8 + Math.sin(elapsed * 1.1) * 0.35;

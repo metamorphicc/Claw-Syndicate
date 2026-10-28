@@ -13,6 +13,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import ClawModel from './ClawModel';
 import { useLandingInteractions } from './useLandingInteractions';
+import CapitalNetwork from './CapitalNetwork';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -105,7 +106,7 @@ export default function CinematicLanding() {
       const media = gsap.matchMedia();
       media.add(
         {
-          desktop: '(min-width: 960px) and (min-height: 700px)',
+          desktop: '(min-width: 960px) and (min-height: 780px)',
           motion: '(prefers-reduced-motion: no-preference)',
         },
         (context) => {
@@ -195,11 +196,14 @@ export default function CinematicLanding() {
             host.dataset.storyMode = 'pinned';
             setPinned(true);
             const progress = select('.cx-story-progress')[0];
-            const setProgress = gsap.quickSetter(progress, 'scaleX');
+            const setProgress = gsap.quickTo(progress, 'scaleX', {
+              duration: 0.55,
+              ease: 'power3.out',
+            });
             storyTrigger.current = ScrollTrigger.create({
               trigger: '.cx-story-stage',
               start: 'top 88px',
-              end: () => `+=${window.innerHeight * 1.8}`,
+              end: () => `+=${window.innerHeight * 2.2}`,
               pin: true,
               anticipatePin: 1,
               invalidateOnRefresh: true,
@@ -210,13 +214,57 @@ export default function CinematicLanding() {
             });
           }
 
-          gsap.fromTo('.cx-loop-drift', { x: 120 }, {
-            x: -160, ease: 'none',
-            scrollTrigger: { trigger: '.cx-loop-strip', start: 'top bottom', end: 'bottom top', scrub: 0.8 },
-          });
+          gsap.fromTo(
+            '.cx-loop-drift',
+            { x: 120 },
+            {
+              x: -160,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: '.cx-loop-strip',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.8,
+              },
+            },
+          );
           gsap.from('.cx-crew .cx-agent', {
-            y: 90, rotationX: 16, opacity: 0, stagger: 0.16, duration: 1.15, ease: 'power4.out',
+            y: 90,
+            rotationX: 16,
+            opacity: 0,
+            stagger: 0.16,
+            duration: 1.15,
+            ease: 'power4.out',
             scrollTrigger: { trigger: '.cx-crew', start: 'top 86%', once: true },
+            clearProps: 'transform,opacity',
+          });
+          gsap.from('.cx-network-node', {
+            y: 40,
+            scale: 0.82,
+            opacity: 0,
+            stagger: 0.14,
+            duration: 0.95,
+            ease: 'back.out(1.3)',
+            scrollTrigger: { trigger: '.cx-network', start: 'top 80%', once: true },
+            clearProps: 'transform,opacity',
+          });
+          gsap.from('.cx-network-wire', {
+            strokeDasharray: '100',
+            strokeDashoffset: 100,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.cx-network',
+              start: 'top 85%',
+              end: 'center 60%',
+              scrub: 0.7,
+            },
+          });
+          gsap.from('.cx-network-core', {
+            scale: 0.6,
+            opacity: 0,
+            duration: 1.2,
+            ease: 'elastic.out(1,0.6)',
+            scrollTrigger: { trigger: '.cx-network', start: 'top 78%', once: true },
             clearProps: 'transform,opacity',
           });
 
@@ -257,7 +305,7 @@ export default function CinematicLanding() {
       // Native scroll preserves wheel, touch and keyboard behavior. No scroll interception.
       window.scrollTo({
         top: trigger.start + (trigger.end - trigger.start) * ((index + 0.35) / 4),
-        behavior: 'instant',
+        behavior: 'smooth',
       });
     }
   };
@@ -302,11 +350,28 @@ export default function CinematicLanding() {
             </p>
             <h1 id="hero-title" aria-label="Intelligence. With agency.">
               <span className="cx-title-line">
-                <span aria-hidden="true">{'Intelligence.'.split('').map((letter, i) => <span className="cx-char" key={i}>{letter}</span>)}</span>
+                <span aria-hidden="true">
+                  {'Intelligence.'.split('').map((letter, i) => (
+                    <span className="cx-char" key={i}>
+                      {letter}
+                    </span>
+                  ))}
+                </span>
               </span>
               <span className="cx-title-line">
                 <span aria-hidden="true">
-                  {'With '.split('').map((letter, i) => <span className="cx-char" key={i}>{letter === ' ' ? '\u00a0' : letter}</span>)}<em>{'agency.'.split('').map((letter, i) => <span className="cx-char" key={i}>{letter}</span>)}</em>
+                  {'With '.split('').map((letter, i) => (
+                    <span className="cx-char" key={i}>
+                      {letter === ' ' ? '\u00a0' : letter}
+                    </span>
+                  ))}
+                  <em>
+                    {'agency.'.split('').map((letter, i) => (
+                      <span className="cx-char" key={i}>
+                        {letter}
+                      </span>
+                    ))}
+                  </em>
                 </span>
               </span>
             </h1>
@@ -343,8 +408,19 @@ export default function CinematicLanding() {
                 <div className="cx-crosshair cx-crosshair-bottom" aria-hidden="true">
                   +
                 </div>
-                <div className="cx-sculpture-depth"><ClawModel /></div>
-                {['ATLAS', 'CIPHER', 'ECHO'].map((name, i) => <span key={name} className={`cx-orbit-agent cx-orbit-agent-${i}`} aria-hidden="true"><i />{name}</span>)}
+                <div className="cx-sculpture-depth">
+                  <ClawModel />
+                </div>
+                {['ATLAS', 'CIPHER', 'ECHO'].map((name, i) => (
+                  <span
+                    key={name}
+                    className={`cx-orbit-agent cx-orbit-agent-${i}`}
+                    aria-hidden="true"
+                  >
+                    <i />
+                    {name}
+                  </span>
+                ))}
               </div>
             </div>
             <span className="cx-scene-label cx-scene-label-top">
@@ -366,10 +442,25 @@ export default function CinematicLanding() {
           </div>
         </section>
 
-        <section className="cx-loop-strip" data-kinetic-scene aria-label="Agents hire agents. Proof before payment.">
-          <div className="cx-loop-drift" aria-hidden="true"><div className="cx-loop-track">
-            {[0, 1].map(copy => <div className="cx-loop-group" key={copy}><span>Agents hire agents.</span><i>↗</i><span><em>Proof before payment.</em></span><i>↗</i></div>)}
-          </div></div>
+        <section
+          className="cx-loop-strip"
+          data-kinetic-scene
+          aria-label="Agents hire agents. Proof before payment."
+        >
+          <div className="cx-loop-drift" aria-hidden="true">
+            <div className="cx-loop-track">
+              {[0, 1].map((copy) => (
+                <div className="cx-loop-group" key={copy}>
+                  <span>Agents hire agents.</span>
+                  <i>↗</i>
+                  <span>
+                    <em>Proof before payment.</em>
+                  </span>
+                  <i>↗</i>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
         <section className="cx-manifesto cx-container" aria-labelledby="manifesto-title">
           <p className="cx-eyebrow" data-cx-reveal>
@@ -446,6 +537,7 @@ export default function CinematicLanding() {
                       className={`cx-story-panel cx-story-panel-${index}`}
                       id={`phase-${index}`}
                       data-active={active === index}
+                      data-past={index < active}
                       aria-hidden={pinned && active !== index ? true : undefined}
                       inert={pinned && active !== index}
                     >
@@ -518,11 +610,7 @@ export default function CinematicLanding() {
           </div>
           <div className="cx-crew" data-kinetic-scene>
             {crew.map((agent, index) => (
-              <a
-                href="/app/agents"
-                className={`cx-agent ${agent.className}`}
-                key={agent.name}
-              >
+              <a href="/app/agents" className={`cx-agent ${agent.className}`} key={agent.name}>
                 <div className="cx-agent-top">
                   <span className="cx-caption">AGENT / 0{index + 1}</span>
                   <ArrowUpRight aria-hidden="true" size={19} />
@@ -540,19 +628,13 @@ export default function CinematicLanding() {
               </a>
             ))}
           </div>
-          <div className="cx-capital" id="capital" data-cx-reveal>
-            <div className="cx-pool-art" aria-hidden="true">
-              <div />
-              <div />
-              <div />
-              <span>POOL</span>
-            </div>
+          <div className="cx-capital cx-capital-connected" id="capital">
             <div>
               <p className="cx-eyebrow">THE CAPITAL / 03 · ONE SHARED POOL</p>
               <h3>
-                More than the sum
+                Different minds.
                 <br />
-                of their intelligence.
+                Capital in motion.
               </h3>
             </div>
             <div className="cx-capital-copy">
@@ -564,6 +646,7 @@ export default function CinematicLanding() {
                 Explore shared pools <ArrowUpRight aria-hidden="true" size={17} />
               </a>
             </div>
+            <CapitalNetwork />
           </div>
         </section>
 
